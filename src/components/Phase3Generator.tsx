@@ -1,5 +1,6 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import type { BusinessProfile } from '../types';
+import { api } from '../api/client';
 import { WebsitePreview } from './WebsitePreview';
 import { Globe, Rocket, CheckCircle2, ArrowRight, Terminal, Copy, Check } from 'lucide-react';
 
@@ -25,8 +26,12 @@ export const Phase3Generator = ({
   const [deployLogs, setDeployLogs] = useState<string[]>([]);
   const [copiedUrl, setCopiedUrl] = useState(false);
 
+  useEffect(() => {
+    setActiveLead(selectedLead);
+  }, [selectedLead]);
+
   const cleanSubdomain = activeLead.title.toLowerCase().replace(/[^a-z0-9]/g, '-');
-  const demoUrl = `https://${cleanSubdomain}-demo.vercel.app`;
+  const demoUrl = activeLead.deploymentUrl || `https://${cleanSubdomain}-demo.vercel.app`;
 
   const handleLeadChange = (leadId: string) => {
     const found = leads.find(l => l.id === leadId);
@@ -36,27 +41,34 @@ export const Phase3Generator = ({
     }
   };
 
-  const runVercelDeployment = () => {
+  const runVercelDeployment = async () => {
     setIsDeploying(true);
     setDeployLogs([
-      `[Vercel API] POST https://api.vercel.com/v13/deployments`,
-      `[Payload] Project: "${cleanSubdomain}-demo" | Framework: Next.js (App Router)`,
+      `[Vercel Deployer] POST /api/deploy/vercel -> Project: "${cleanSubdomain}-demo"`,
       `[Assembler] Ingesting profile JSON into HeroSection.tsx & ClaimBanner.tsx...`,
       `[Tailwind Engine] Compiling Tailwind CSS utilities & dynamic color palettes...`,
       `[SSG Engine] Generating static HTML with optimized Google Maps ratings & photos...`,
-      `[Edge Network] Propagating deployment to 300+ global PoPs...`,
-      `[Deployment Complete] Live URL ready: ${demoUrl}`
+      `[Edge Network] Propagating deployment to 300+ global PoPs...`
     ]);
 
-    setTimeout(() => {
-      onUpdateDeployment(activeLead.id, demoUrl);
+    try {
+      const res = await api.deployVercel(activeLead.id);
+      setDeployLogs(prev => [
+        ...prev,
+        `[SQLite Database] Updated lead status to 'site_genere' and saved URL.`,
+        `[Deployment Complete] Live URL ready: ${res.url}`
+      ]);
+      onUpdateDeployment(activeLead.id, res.url);
       setActiveLead(prev => ({
         ...prev,
-        deploymentUrl: demoUrl,
+        deploymentUrl: res.url,
         status: 'site_genere'
       }));
+    } catch (err: any) {
+      setDeployLogs(prev => [...prev, `[Deployment Error] ${err.message}`]);
+    } finally {
       setIsDeploying(false);
-    }, 2200);
+    }
   };
 
   const copyUrlToClipboard = () => {

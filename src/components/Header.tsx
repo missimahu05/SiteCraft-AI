@@ -1,5 +1,5 @@
 import type { ActiveTab, BusinessProfile, StripeEvent } from '../types';
-import { Sparkles, MapPin, Eye, Code2, Send, CreditCard, FileDown, TrendingUp } from 'lucide-react';
+import { Sparkles, MapPin, Eye, Code2, Send, CreditCard, FileDown, TrendingUp, Settings } from 'lucide-react';
 
 interface HeaderProps {
   activeTab: ActiveTab;
@@ -7,6 +7,7 @@ interface HeaderProps {
   leads: BusinessProfile[];
   stripeEvents: StripeEvent[];
   onOpenPdfModal: () => void;
+  onOpenSettings: () => void;
 }
 
 export const Header = ({
@@ -14,7 +15,8 @@ export const Header = ({
   setActiveTab,
   leads,
   stripeEvents,
-  onOpenPdfModal
+  onOpenPdfModal,
+  onOpenSettings
 }: HeaderProps) => {
   const totalLeads = leads.length;
   const qualifiedLeads = leads.filter(l => l.rating >= 3.8 && l.reviewsCount >= 15).length;
@@ -71,6 +73,16 @@ export const Header = ({
             <span className="text-zinc-400">Revenus Stripe :</span>
             <span className="font-bold text-emerald-400 font-mono">{revenue} €</span>
           </div>
+
+          {/* Settings Button */}
+          <button
+            onClick={onOpenSettings}
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-zinc-800 hover:bg-zinc-700 text-white font-medium transition text-xs shadow-sm cursor-pointer"
+            title="Configurer les clés API du backend"
+          >
+            <Settings className="w-3.5 h-3.5 text-emerald-400" />
+            <span>Clés API</span>
+          </button>
 
           {/* PDF Export Button */}
           <button

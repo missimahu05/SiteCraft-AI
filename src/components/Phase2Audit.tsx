@@ -1,5 +1,6 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import type { BusinessProfile } from '../types';
+import { api } from '../api/client';
 import { Eye, ShieldAlert, Sparkles, CheckCircle2, ArrowRight, RefreshCw, Laptop, AlertTriangle } from 'lucide-react';
 
 interface Phase2Props {
@@ -20,6 +21,10 @@ export const Phase2Audit = ({
   const [isAuditing, setIsAuditing] = useState(false);
   const [activeLead, setActiveLead] = useState<BusinessProfile>(selectedLead);
 
+  useEffect(() => {
+    setActiveLead(selectedLead);
+  }, [selectedLead]);
+
   const handleLeadChange = (leadId: string) => {
     const found = leads.find(l => l.id === leadId);
     if (found) {
@@ -28,41 +33,21 @@ export const Phase2Audit = ({
     }
   };
 
-  const runVisionAudit = () => {
+  const runVisionAudit = async () => {
     setIsAuditing(true);
-
-    setTimeout(() => {
-      // Realistic scoring based on whether they have a site or not
-      const newAudit = {
-        score_global: activeLead.website ? 4.6 : 2.8,
-        criteres: {
-          modernite: activeLead.website ? 4.0 : 2.0,
-          lisibilite: activeLead.website ? 4.8 : 3.0,
-          cta: activeLead.website ? 4.2 : 3.2,
-          visuels: activeLead.website ? 5.4 : 3.0,
-        },
-        defauts_majeurs: activeLead.website ? [
-          'Design non optimisé pour mobile (ratio d\'abandon estimé à 65%)',
-          'Absence de bouton CTA d\'appel direct ou de réservation instantanée',
-          'Typographie datée et faible hiérarchie des informations',
-          'Aucune mise en avant des avis certifiés Google Maps'
-        ] : [
-          'Absence totale de site web officiel (perte de 40% des clients de passage)',
-          'Aucune vitrine pour exposer les produits et les tarifs',
-          'Les concurrents directs captent le trafic de recherche locale'
-        ],
-        eligible_refonte: true,
-        auditDate: new Date().toISOString().split('T')[0]
-      };
-
+    try {
+      const newAudit = await api.runAudit(activeLead.id);
       onUpdateLeadAudit(activeLead.id, newAudit);
       setActiveLead(prev => ({
         ...prev,
         audit: newAudit,
         status: 'qualifie'
       }));
+    } catch (err) {
+      console.error('Audit failed:', err);
+    } finally {
       setIsAuditing(false);
-    }, 1800);
+    }
   };
 
   const audit = activeLead.audit;

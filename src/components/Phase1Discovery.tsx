@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import type { BusinessProfile } from '../types';
+import { api } from '../api/client';
 import { Search, Globe, Phone, Star, MapPin, CheckCircle2, AlertCircle, ArrowRight, Plus, Terminal } from 'lucide-react';
 
 interface Phase1Props {
@@ -40,47 +41,28 @@ export const Phase1Discovery = ({
     return true;
   });
 
-  const runSimulatedScraper = (query: string) => {
+  const runSimulatedScraper = async (fullQuery: string) => {
     setIsScraping(true);
+    const [query, location] = fullQuery.split(' ');
     setScrapeTerminalLog([
-      `[Playwright] Launching chromium headless...`,
-      `[Playwright] Navigating to Google Maps search: "${query}"`,
-      `[Extractor] Parsing DOM elements: h1.DUwDvf, div.F7nice, phone, address...`,
-      `[Rule Check] Testing criteria: Reviews >= 15 & Rating >= 3.8...`,
-      `[Scraper] 1 new qualified business detected and added to pipeline!`
+      `[Backend Engine] POST /api/scrape/maps -> Query: "${query}", City: "${location || 'Paris'}"`,
+      `[Playwright Crawler] Inspecting Google Maps place results...`,
+      `[DOM Extractor] Parsing: h1.DUwDvf, div.F7nice, phone, address, website...`,
+      `[Algorithm Gate] Filter: Note ≥ 3.8★ & Avis ≥ 15...`,
+      `[SQLite Database] Inserting discovered businesses into table 'leads'...`
     ]);
 
-    setTimeout(() => {
-      const generatedId = `lead-${Date.now()}`;
-      const newLead: BusinessProfile = {
-        id: generatedId,
-        title: query.includes('Boulangerie') ? 'Boulangerie Les Délices du Faubourg' : 'Plomberie Chauffage Express',
-        rating: 4.8,
-        reviewsCount: 42,
-        category: query.includes('Boulangerie') ? 'Boulangerie' : 'Artisan Plombier',
-        phone: '01 42 30 19 88',
-        address: '56 Rue du Faubourg Saint-Antoine, 75012 Paris',
-        website: query.includes('Boulangerie') ? null : 'http://plombier-depannage-idf.free.fr',
-        photos: [
-          'https://images.unsplash.com/photo-1589367920969-ab8e050bbb04?auto=format&fit=crop&w=1200&q=80',
-          'https://images.unsplash.com/photo-1509440159596-0249088772ff?auto=format&fit=crop&w=800&q=80'
-        ],
-        tagline: 'Service artisanal réactif, devis gratuit et interventions garanties.',
-        description: 'Professionnel certifié intervenant avec rigueur et des tarifs conventionnés transparents.',
-        openingHours: ['Lundi - Samedi : 07h00 - 20h00', 'Dimanche : Fermé'],
-        services: [
-          { name: 'Intervention d\'urgence', description: 'Arrivée sous 45 min garantie', price: 'Dès 89 €' },
-          { name: 'Installation & Rénovation', description: 'Matériel certifié NF', price: 'Sur devis' }
-        ],
-        topReviews: [
-          { author: 'Guillaume T.', rating: 5, text: 'Travail impeccable et ponctualité exemplaire !', date: 'Hier' }
-        ],
-        status: query.includes('Boulangerie') ? 'opportunite_creation' : 'opportunite_refonte'
-      };
-
-      onAddNewLead(newLead);
+    try {
+      const scraped = await api.scrapeMaps(query || 'Commerce', location || 'Paris', 2);
+      if (scraped.length > 0) {
+        scraped.forEach(l => onAddNewLead(l));
+      }
+      setScrapeTerminalLog(prev => [...prev, `[Success] ${scraped.length} nouveaux commerces enregistrés dans SQLite !`]);
+    } catch (err: any) {
+      setScrapeTerminalLog(prev => [...prev, `[Error] Erreur scraper: ${err.message}`]);
+    } finally {
       setIsScraping(false);
-    }, 2000);
+    }
   };
 
   const handleManualSubmit = (e: React.FormEvent) => {

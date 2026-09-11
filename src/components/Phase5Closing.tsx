@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import type { BusinessProfile, StripeEvent } from '../types';
 import confetti from 'canvas-confetti';
 import { CreditCard, CheckCircle2, Zap, RefreshCw, Smartphone, Server, Globe2 } from 'lucide-react';
@@ -7,25 +7,29 @@ interface Phase5Props {
   selectedLead: BusinessProfile;
   leads: BusinessProfile[];
   stripeEvents: StripeEvent[];
-  onAddStripeEvent: (event: StripeEvent) => void;
-  onMarkLeadClaimed: (leadId: string) => void;
+  onMarkLeadClaimed: (leadId: string, domain: string) => Promise<void> | void;
 }
 
 export const Phase5Closing = ({
   selectedLead,
   leads,
   stripeEvents,
-  onAddStripeEvent,
   onMarkLeadClaimed
 }: Phase5Props) => {
   const [activeLead, setActiveLead] = useState<BusinessProfile>(selectedLead);
   const [isProcessingCheckout, setIsProcessingCheckout] = useState(false);
   const [customDomain, setCustomDomain] = useState(`${activeLead.title.toLowerCase().replace(/[^a-z0-9]/g, '')}.fr`);
 
-  const handleSimulatePayment = () => {
+  useEffect(() => {
+    setActiveLead(selectedLead);
+    setCustomDomain(`${selectedLead.title.toLowerCase().replace(/[^a-z0-9]/g, '')}.fr`);
+  }, [selectedLead]);
+
+  const handleSimulatePayment = async () => {
     setIsProcessingCheckout(true);
 
-    setTimeout(() => {
+    try {
+      await onMarkLeadClaimed(activeLead.id, customDomain);
       // Trigger Confetti Celebration!
       try {
         confetti({
@@ -36,28 +40,12 @@ export const Phase5Closing = ({
       } catch (e) {
         // Fallback silently if confetti encounters issue
       }
-
-      const newEvent: StripeEvent = {
-        id: `evt_${Date.now()}`,
-        type: 'checkout.session.completed',
-        amount: 490,
-        businessName: activeLead.title,
-        domain: customDomain,
-        status: 'paid',
-        timestamp: new Date().toLocaleTimeString('fr-FR'),
-        webhookTriggered: {
-          n8nWorkflow: true,
-          domainTicket: true,
-          twilioSms: true,
-          prodTransition: true
-        }
-      };
-
-      onAddStripeEvent(newEvent);
-      onMarkLeadClaimed(activeLead.id);
       setActiveLead(prev => ({ ...prev, claimed: true, status: 'cloture' }));
+    } catch (err) {
+      console.error('Payment checkout error:', err);
+    } finally {
       setIsProcessingCheckout(false);
-    }, 1500);
+    }
   };
 
   return (

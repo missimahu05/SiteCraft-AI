@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import type { BusinessProfile } from '../types';
 import { Copy, Check, Mail, MessageSquare, PhoneCall, ArrowRight, ArrowLeftRight } from 'lucide-react';
 
@@ -19,6 +19,10 @@ export const Phase4Outreach = ({
   const [channel, setChannel] = useState<'email' | 'whatsapp' | 'sms'>('email');
   const [copied, setCopied] = useState(false);
   const [sliderPosition, setSliderPosition] = useState(50); // 0 to 100 for Before / After slider
+
+  useEffect(() => {
+    setActiveLead(selectedLead);
+  }, [selectedLead]);
 
   const handleLeadChange = (leadId: string) => {
     const found = leads.find(l => l.id === leadId);
