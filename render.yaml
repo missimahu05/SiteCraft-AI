@@ -1,0 +1,30 @@
+services:
+  - type: web
+    name: sitecraft-ai-engine
+    env: node
+    plan: starter
+    region: frankfurt
+    buildCommand: npm install && npm run build
+    startCommand: npm run start
+    healthCheckPath: /api/health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 3001
+      - key: MONGODB_URI
+        sync: false
+      - key: CLOUDFLARE_API_TOKEN
+        sync: false
+      - key: CLOUDFLARE_ACCOUNT_ID
+        sync: false
+      - key: FEEXPAY_API_KEY
+        sync: false
+      - key: FEEXPAY_SHOP_ID
+        sync: false
+      - key: FEEXPAY_MODE
+        value: LIVE
+      - key: OPENAI_API_KEY
+        sync: false
+      - key: GEMINI_API_KEY
+        sync: false
