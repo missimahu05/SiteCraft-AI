@@ -1,10 +1,12 @@
 import { useState } from 'react';
 import type { BusinessProfile } from '../types';
 import { api } from '../api/client';
-import { Search, Globe, Phone, Star, MapPin, CheckCircle2, AlertCircle, ArrowRight, Plus, Terminal } from 'lucide-react';
+import { InteractiveTerritoryMap } from './InteractiveTerritoryMap';
+import { Search, Phone, Star, MapPin, ArrowRight, Plus, Terminal, Map as MapIcon, LayoutGrid, Layers } from 'lucide-react';
 
 interface Phase1Props {
   leads: BusinessProfile[];
+  selectedLead?: BusinessProfile | null;
   onSelectLead: (lead: BusinessProfile) => void;
   onNavigateToAudit: (lead: BusinessProfile) => void;
   onAddNewLead: (newLead: BusinessProfile) => void;
@@ -12,12 +14,14 @@ interface Phase1Props {
 
 export const Phase1Discovery = ({
   leads,
+  selectedLead = null,
   onSelectLead,
   onNavigateToAudit,
   onAddNewLead
 }: Phase1Props) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [filterType, setFilterType] = useState<'all' | 'creation' | 'refonte'>('all');
+  const [viewLayout, setViewLayout] = useState<'map' | 'grid' | 'both'>('both');
   const [isScraping, setIsScraping] = useState(false);
   const [scrapeTerminalLog, setScrapeTerminalLog] = useState<string[]>([]);
   const [showAddModal, setShowAddModal] = useState(false);
@@ -25,10 +29,10 @@ export const Phase1Discovery = ({
   // Form state for manual lead addition
   const [manualTitle, setManualTitle] = useState('');
   const [manualCategory, setManualCategory] = useState('');
-  const [manualRating, setManualRating] = useState('4.5');
-  const [manualReviews, setManualReviews] = useState('32');
-  const [manualPhone, setManualPhone] = useState('01 45 67 89 10');
-  const [manualAddress, setManualAddress] = useState('10 Rue Principale, Paris');
+  const [manualRating] = useState('4.8');
+  const [manualReviews] = useState('42');
+  const [manualPhone, setManualPhone] = useState('+229 97 00 12 34');
+  const [manualAddress, setManualAddress] = useState('Quartier Titirou, Parakou');
   const [manualWebsite, setManualWebsite] = useState('');
 
   const filteredLeads = leads.filter(lead => {
@@ -45,50 +49,50 @@ export const Phase1Discovery = ({
     setIsScraping(true);
     const [query, location] = fullQuery.split(' ');
     setScrapeTerminalLog([
-      `[Backend Engine] POST /api/scrape/maps -> Query: "${query}", City: "${location || 'Paris'}"`,
-      `[Playwright Crawler] Inspecting Google Maps place results...`,
-      `[DOM Extractor] Parsing: h1.DUwDvf, div.F7nice, phone, address, website...`,
-      `[Algorithm Gate] Filter: Note ≥ 3.8★ & Avis ≥ 15...`,
-      `[SQLite Database] Inserting discovered businesses into table 'leads'...`
+      `[Antigravity ScoutAgent] POST /api/scrape/maps -> Query: "${query}", Location: "${location || 'Parakou'}"`,
+      `[Playwright Crawler] Balayage du périmètre Google Maps & extraction des coordonnées...`,
+      `[Qualification] Filtrage : Note ≥ 3.8★ & Avis ≥ 15 (potentiel commercial avéré)...`,
+      `[MongoDB Engine] Synchronisation des fiches prospects géoréférencées...`
     ]);
 
     try {
-      const scraped = await api.scrapeMaps(query || 'Commerce', location || 'Paris', 2);
+      const scraped = await api.scrapeMaps(query || 'Artisan', location || 'Parakou', 2);
       if (scraped.length > 0) {
         scraped.forEach(l => onAddNewLead(l));
       }
-      setScrapeTerminalLog(prev => [...prev, `[Success] ${scraped.length} nouveaux commerces enregistrés dans SQLite !`]);
+      setScrapeTerminalLog(prev => [...prev, `[Succès] ${scraped.length} nouveaux prospects qualifiés injectés sur la carte !`]);
     } catch (err: any) {
-      setScrapeTerminalLog(prev => [...prev, `[Error] Erreur scraper: ${err.message}`]);
+      setScrapeTerminalLog(prev => [...prev, `[Erreur] ${err.message}`]);
     } finally {
       setIsScraping(false);
     }
   };
 
-  const handleManualSubmit = (e: React.FormEvent) => {
+  const handleCreateManual = (e: React.FormEvent) => {
     e.preventDefault();
     if (!manualTitle) return;
 
     const newLead: BusinessProfile = {
       id: `lead-${Date.now()}`,
       title: manualTitle,
-      category: manualCategory || 'Commerce Local',
-      rating: parseFloat(manualRating) || 4.5,
-      reviewsCount: parseInt(manualReviews, 10) || 20,
-      phone: manualPhone || '01 00 00 00 00',
-      address: manualAddress || 'France',
+      category: manualCategory || 'Artisan Qualifié',
+      rating: parseFloat(manualRating) || 4.8,
+      reviewsCount: parseInt(manualReviews, 10) || 30,
+      phone: manualPhone || '+229 97 00 00 00',
+      address: manualAddress || 'Bénin',
+      city: 'Parakou',
       website: manualWebsite ? manualWebsite : null,
       photos: [
-        'https://images.unsplash.com/photo-1555507036-ab1f4038808a?auto=format&fit=crop&w=1200&q=80'
+        'https://images.unsplash.com/photo-1589939705384-5185137a7f0f?auto=format&fit=crop&w=1200&q=80'
       ],
       tagline: 'Expertise locale et engagement qualité pour tous nos clients.',
       description: 'Établissement reconnu pour son savoir-faire et la satisfaction de sa clientèle.',
-      openingHours: ['Lundi - Vendredi : 09h00 - 19h00'],
+      openingHours: ['Lundi - Samedi : 07h30 - 19h00'],
       services: [
-        { name: 'Service Principal', description: 'Prestation complète sur-mesure', price: 'Sur devis' }
+        { name: 'Prestation Artisanale', description: 'Intervention sur-mesure de haute précision', price: 'Sur devis' }
       ],
       topReviews: [
-        { author: 'Client vérifié', rating: 5, text: 'Très satisfait de la prestation !', date: 'Récemment' }
+        { author: 'Client vérifié', rating: 5, text: 'Très satisfait de la prestation et du professionnalisme !', date: 'Récemment' }
       ],
       status: manualWebsite ? 'opportunite_refonte' : 'opportunite_creation'
     };
@@ -105,114 +109,147 @@ export const Phase1Discovery = ({
       <div className="p-8 sm:p-10 rounded-3xl bg-white border border-[#E0E3EF] shadow-card relative overflow-hidden flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6">
         <div className="space-y-2 relative z-10">
           <p className="section-label">
-            PHASE 01 • PLAYWRIGHT DISCOVERY ENGINE
+            PHASE 01 • CARTOGRAPHIE & DÉTECTION GOOGLE MAPS
           </p>
 
           <h2 className="text-2xl sm:text-4xl font-outfit font-black text-[#1A2550] tracking-tight uppercase italic">
-            Scraping & Qualification <span className="text-[#C41641]">Google Maps</span>
+            Scraping & Qualification <span className="text-[#C41641]">Géolocalisée</span>
           </h2>
 
           <p className="text-sm text-[#6B7299] max-w-3xl leading-relaxed">
-            Filtrage algorithmique strict des commerces de proximité : <strong className="text-[#1A2550]">Avis Google ≥ 15</strong> (traction prouvée) et <strong className="text-[#1A2550]">Note ≥ 3.8/5.0</strong>. Détection immédiate du potentiel : opportunité de <em>création intégrale</em> (sans site) ou de <em>refonte moderne</em>.
+            Cartographie interactive en temps réel des artisans et commerces. Détection algorithmique des opportunités : <strong className="text-[#1A2550]">Note Google ≥ 3.8★</strong> avec <strong className="text-[#1A2550]">absence totale de site</strong> (création 300 000 FCFA) ou site obsolète (refonte).
           </p>
         </div>
 
-        <button
-          onClick={() => setShowAddModal(true)}
-          className="btn-primary shrink-0"
-        >
-          <Plus className="w-4 h-4" />
-          <span>Ajouter un commerce</span>
-        </button>
+        <div className="flex items-center gap-3 shrink-0">
+          <button
+            onClick={() => setShowAddModal(true)}
+            className="btn-primary text-xs !py-3 !px-5"
+          >
+            <Plus className="w-4 h-4" />
+            <span>Ajouter un commerce</span>
+          </button>
+        </div>
       </div>
 
-      {/* Quick Search & Live Crawler Bar */}
-      <div className="grid lg:grid-cols-12 gap-4">
-        {/* Search Bar & Filters */}
-        <div className="lg:col-span-8 flex flex-col sm:flex-row gap-3">
-          <div className="relative flex-1">
+      {/* Control Bar: Search + Fast Triggers + Layout Toggle */}
+      <div className="p-4 rounded-3xl bg-white border border-[#E0E3EF] shadow-sm space-y-3">
+        <div className="flex flex-col lg:flex-row items-center justify-between gap-3">
+          {/* Search Box */}
+          <div className="relative w-full lg:w-96">
             <Search className="absolute left-4 top-3.5 w-4 h-4 text-[#6B7299]" />
             <input
               type="text"
-              placeholder="Rechercher un commerce (ex: Boulangerie, Plombier, Paris, Bordeaux)..."
+              placeholder="Rechercher par nom, métier ou ville..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-11 pr-4 py-3 rounded-2xl bg-white border border-[#E0E3EF] text-sm text-[#1A2550] placeholder-[#6B7299] focus:outline-none focus:border-[#C41641] shadow-sm transition font-medium"
+              className="w-full pl-11 pr-4 py-2.5 rounded-2xl bg-[#F4F2EE] border border-[#E0E3EF] text-xs text-[#1A2550] placeholder-[#6B7299] focus:outline-none focus:border-[#C41641] transition font-medium"
             />
           </div>
 
           {/* Filter Pills */}
-          <div className="flex items-center gap-1.5 bg-white p-1.5 rounded-2xl border border-[#E0E3EF] text-xs shrink-0 shadow-sm">
+          <div className="flex items-center gap-1.5 bg-[#F4F2EE] p-1 rounded-2xl border border-[#E0E3EF] text-xs">
             <button
               onClick={() => setFilterType('all')}
-              className={`px-3.5 py-2 rounded-xl transition font-outfit font-bold cursor-pointer ${
-                filterType === 'all'
-                  ? 'bg-[#1A2550] text-white shadow-sm'
-                  : 'text-[#6B7299] hover:text-[#1A2550]'
+              className={`px-3 py-1.5 rounded-xl transition font-outfit font-bold cursor-pointer ${
+                filterType === 'all' ? 'bg-[#1A2550] text-white shadow-sm' : 'text-[#6B7299] hover:text-[#1A2550]'
               }`}
             >
               Tous ({leads.length})
             </button>
             <button
               onClick={() => setFilterType('creation')}
-              className={`px-3.5 py-2 rounded-xl transition font-outfit font-bold cursor-pointer ${
-                filterType === 'creation'
-                  ? 'bg-[#C41641] text-white shadow-sm'
-                  : 'text-[#6B7299] hover:text-[#1A2550]'
+              className={`px-3 py-1.5 rounded-xl transition font-outfit font-bold cursor-pointer ${
+                filterType === 'creation' ? 'bg-[#C41641] text-white shadow-sm' : 'text-[#6B7299] hover:text-[#1A2550]'
               }`}
             >
-              Création ({leads.filter(l => !l.website).length})
+              Sans Site ({leads.filter(l => !l.website).length})
             </button>
             <button
               onClick={() => setFilterType('refonte')}
-              className={`px-3.5 py-2 rounded-xl transition font-outfit font-bold cursor-pointer ${
-                filterType === 'refonte'
-                  ? 'bg-[#1A2550] text-white shadow-sm'
-                  : 'text-[#6B7299] hover:text-[#1A2550]'
+              className={`px-3 py-1.5 rounded-xl transition font-outfit font-bold cursor-pointer ${
+                filterType === 'refonte' ? 'bg-[#1A2550] text-white shadow-sm' : 'text-[#6B7299] hover:text-[#1A2550]'
               }`}
             >
               Refonte ({leads.filter(l => !!l.website).length})
             </button>
           </div>
-        </div>
 
-        {/* Live Scraper Fast Triggers */}
-        <div className="lg:col-span-4 flex items-center gap-2.5">
-          <button
-            disabled={isScraping}
-            onClick={() => runSimulatedScraper('Boulangerie Paris')}
-            className="flex-1 px-4 py-3 rounded-2xl bg-white hover:bg-[#F4F2EE] border border-[#E0E3EF] text-xs font-outfit font-bold text-[#1A2550] flex items-center justify-center gap-2 transition cursor-pointer shadow-sm hover:border-[#C41641] disabled:opacity-50"
-          >
-            <Terminal className="w-3.5 h-3.5 text-[#C41641]" />
-            <span>Scrape Paris</span>
-          </button>
-          <button
-            disabled={isScraping}
-            onClick={() => runSimulatedScraper('Plombier Lyon')}
-            className="flex-1 px-4 py-3 rounded-2xl bg-white hover:bg-[#F4F2EE] border border-[#E0E3EF] text-xs font-outfit font-bold text-[#1A2550] flex items-center justify-center gap-2 transition cursor-pointer shadow-sm hover:border-[#C41641] disabled:opacity-50"
-          >
-            <Terminal className="w-3.5 h-3.5 text-[#1A2550]" />
-            <span>Scrape Lyon</span>
-          </button>
+          {/* View Mode Toggle */}
+          <div className="flex items-center gap-1 bg-[#F4F2EE] p-1 rounded-2xl border border-[#E0E3EF] text-xs">
+            <button
+              onClick={() => setViewLayout('both')}
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl font-outfit font-bold transition cursor-pointer ${
+                viewLayout === 'both' ? 'bg-white text-[#1A2550] shadow-sm' : 'text-[#6B7299]'
+              }`}
+              title="Vue Mixte (Carte + Liste)"
+            >
+              <Layers className="w-3.5 h-3.5 text-[#C41641]" />
+              <span>Mixte</span>
+            </button>
+
+            <button
+              onClick={() => setViewLayout('map')}
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl font-outfit font-bold transition cursor-pointer ${
+                viewLayout === 'map' ? 'bg-white text-[#1A2550] shadow-sm' : 'text-[#6B7299]'
+              }`}
+              title="Vue Carte Plein Écran"
+            >
+              <MapIcon className="w-3.5 h-3.5 text-[#1A2550]" />
+              <span>Carte</span>
+            </button>
+
+            <button
+              onClick={() => setViewLayout('grid')}
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl font-outfit font-bold transition cursor-pointer ${
+                viewLayout === 'grid' ? 'bg-white text-[#1A2550] shadow-sm' : 'text-[#6B7299]'
+              }`}
+              title="Vue Grille"
+            >
+              <LayoutGrid className="w-3.5 h-3.5 text-[#1A2550]" />
+              <span>Grille</span>
+            </button>
+          </div>
+
+          {/* Fast Scout Triggers */}
+          <div className="flex items-center gap-2">
+            <button
+              disabled={isScraping}
+              onClick={() => runSimulatedScraper('Peintre Parakou')}
+              className="px-3 py-2 rounded-xl bg-[#FDF1F3] hover:bg-[#FDF1F3]/80 border border-[#C41641]/20 text-xs font-outfit font-bold text-[#C41641] flex items-center gap-1.5 transition cursor-pointer"
+            >
+              <Terminal className="w-3 h-3 text-[#C41641]" />
+              <span>Scout Parakou</span>
+            </button>
+
+            <button
+              disabled={isScraping}
+              onClick={() => runSimulatedScraper('Plombier Cotonou')}
+              className="px-3 py-2 rounded-xl bg-[#E8EAF2] hover:bg-[#E8EAF2]/80 border border-[#1A2550]/20 text-xs font-outfit font-bold text-[#1A2550] flex items-center gap-1.5 transition cursor-pointer"
+            >
+              <Terminal className="w-3 h-3 text-[#1A2550]" />
+              <span>Scout Cotonou</span>
+            </button>
+          </div>
         </div>
       </div>
 
       {/* Terminal Scraper Output Window */}
       {isScraping && (
-        <div className="rounded-2xl bg-[#0F163A] border border-[#1A2550] overflow-hidden shadow-xl font-mono text-xs text-white">
-          <div className="bg-[#0A0E27] px-4 py-2.5 border-b border-white/10 flex items-center justify-between">
+        <div className="rounded-3xl bg-[#0F163A] border border-white/10 overflow-hidden shadow-xl font-mono text-xs text-white">
+          <div className="bg-[#0A0E27] px-5 py-3 border-b border-white/10 flex items-center justify-between">
             <div className="flex items-center gap-2">
               <span className="w-3 h-3 rounded-full bg-[#C41641] inline-block" />
               <span className="w-3 h-3 rounded-full bg-[#FBBF24] inline-block" />
               <span className="w-3 h-3 rounded-full bg-[#10B981] inline-block" />
-              <span className="ml-2 text-slate-400 text-[11px]">crawler_daemon.sh — Playwright headless</span>
+              <span className="ml-2 text-zinc-400 text-[11px]">scout_agent_crawler — Antigravity Agent Swarm</span>
             </div>
             <span className="flex items-center gap-1.5 text-[#C41641] text-[11px] font-bold">
               <span className="w-2 h-2 rounded-full bg-[#C41641] animate-ping" />
               Extraction active
             </span>
           </div>
-          <div className="p-4 space-y-1.5 text-slate-300 bg-[#0F163A] max-h-48 overflow-y-auto">
+          <div className="p-4 space-y-1.5 text-zinc-300 bg-[#0F163A] max-h-48 overflow-y-auto no-scrollbar">
             {scrapeTerminalLog.map((log, i) => (
               <p key={i} className="flex items-center gap-2">
                 <span className="text-[#C41641] select-none">&gt;</span>
@@ -223,206 +260,208 @@ export const Phase1Discovery = ({
         </div>
       )}
 
-      {/* Leads Table / Grid */}
-      <div className="grid md:grid-cols-2 gap-6">
-        {filteredLeads.map((lead) => {
-          const isEligible = lead.rating >= 3.8 && lead.reviewsCount >= 15;
-          const isCreation = !lead.website;
-
-          return (
-            <div
-              key={lead.id}
-              className="p-7 rounded-3xl card-peintre flex flex-col justify-between space-y-5 group"
-            >
-              <div className="space-y-4">
-                {/* Header Badge & Category */}
-                <div className="flex items-start justify-between gap-3">
-                  <div className="space-y-1.5">
-                    <span className="badge-brand">
-                      {lead.category}
-                    </span>
-                    <h3 className="text-xl font-outfit font-black text-[#1A2550] leading-tight group-hover:text-[#C41641] transition-colors">
-                      {lead.title}
-                    </h3>
-                  </div>
-
-                  {isCreation ? (
-                    <span className="badge-accent">
-                      Création Complète
-                    </span>
-                  ) : (
-                    <span className="badge-brand !bg-[#F4F2EE] !text-[#1A2550]">
-                      Refonte Moderne
-                    </span>
-                  )}
-                </div>
-
-                {/* Rating and Reviews */}
-                <div className="flex flex-wrap items-center gap-3 text-xs">
-                  <div className="flex items-center gap-1.5 text-[#D97706] bg-amber-50 px-3 py-1 rounded-xl border border-amber-200 font-black font-outfit">
-                    <Star className="w-4 h-4 fill-[#FBBF24] text-[#FBBF24]" />
-                    <span className="text-sm">{lead.rating.toFixed(1)} / 5</span>
-                  </div>
-                  <span className="text-[#6B7299] font-medium">({lead.reviewsCount} avis Google)</span>
-
-                  {isEligible ? (
-                    <span className="flex items-center gap-1.5 text-emerald-600 font-semibold text-xs ml-auto">
-                      <CheckCircle2 className="w-4 h-4 text-emerald-500" /> Qualifié (≥3.8★)
-                    </span>
-                  ) : (
-                    <span className="flex items-center gap-1.5 text-[#C41641] font-semibold text-xs ml-auto">
-                      <AlertCircle className="w-4 h-4" /> Non éligible
-                    </span>
-                  )}
-                </div>
-
-                {/* Details */}
-                <div className="space-y-2 text-xs text-[#6B7299] pt-2 border-t border-[#F0F1F5]">
-                  <div className="flex items-center gap-2.5">
-                    <MapPin className="w-4 h-4 text-[#C41641] shrink-0" />
-                    <span className="truncate text-[#2D3553]">{lead.address}</span>
-                  </div>
-                  <div className="flex items-center gap-2.5">
-                    <Phone className="w-4 h-4 text-[#C41641] shrink-0" />
-                    <span className="font-mono text-[#2D3553]">{lead.phone}</span>
-                  </div>
-                  <div className="flex items-center gap-2.5">
-                    <Globe className="w-4 h-4 text-[#C41641] shrink-0" />
-                    {lead.website ? (
-                      <span className="text-[#1A2550] font-medium truncate font-mono">{lead.website}</span>
-                    ) : (
-                      <span className="text-[#C41641] font-bold">Aucun site web (Vitrine vierge)</span>
-                    )}
-                  </div>
-                </div>
-              </div>
-
-              {/* Action Buttons */}
-              <div className="pt-4 border-t border-[#F0F1F5] flex items-center justify-between gap-3">
-                <button
-                  onClick={() => onSelectLead(lead)}
-                  className="text-xs text-[#6B7299] hover:text-[#1A2550] transition font-bold font-outfit cursor-pointer"
-                >
-                  Détails Profil
-                </button>
-
-                <button
-                  onClick={() => onNavigateToAudit(lead)}
-                  className="btn-primary text-xs !py-2.5 !px-5"
-                >
-                  <span>{lead.website ? 'Auditer Vision GPT-4o' : 'Générer le Site'}</span>
-                  <ArrowRight className="w-3.5 h-3.5" />
-                </button>
-              </div>
+      {/* Interactive Map Display */}
+      {(viewLayout === 'map' || viewLayout === 'both') && (
+        <div className="space-y-3">
+          <div className="flex items-center justify-between px-2">
+            <div className="flex items-center gap-2">
+              <MapPin className="w-4 h-4 text-[#C41641]" />
+              <span className="font-outfit font-black text-sm uppercase text-[#1A2550]">
+                Radar Géographique des Prospects Détectés
+              </span>
             </div>
-          );
-        })}
-      </div>
+            <span className="text-xs font-mono text-[#6B7299]">
+              Cliquez sur un marqueur pour inspecter la fiche
+            </span>
+          </div>
 
-      {/* Manual Add Lead Modal */}
+          <InteractiveTerritoryMap
+            leads={filteredLeads}
+            selectedLead={selectedLead}
+            onSelectLead={onSelectLead}
+            onNavigateToAudit={onNavigateToAudit}
+          />
+        </div>
+      )}
+
+      {/* Prospect Cards Grid */}
+      {(viewLayout === 'grid' || viewLayout === 'both') && (
+        <div className="space-y-4">
+          <div className="flex items-center justify-between px-2">
+            <span className="font-outfit font-black text-sm uppercase text-[#1A2550]">
+              {filteredLeads.length} Commerce(s) Qualifié(s)
+            </span>
+          </div>
+
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {filteredLeads.map((lead) => {
+              const isSelected = selectedLead?.id === lead.id;
+              const hasNoWebsite = !lead.website;
+
+              return (
+                <div
+                  key={lead.id}
+                  onClick={() => onSelectLead(lead)}
+                  className={`card-peintre p-6 space-y-5 transition-all duration-300 cursor-pointer relative overflow-hidden flex flex-col justify-between ${
+                    isSelected ? 'ring-2 ring-[#C41641] shadow-card-hover' : ''
+                  }`}
+                >
+                  <div className="space-y-4">
+                    {/* Header: Monogram, Rating & Badge */}
+                    <div className="flex items-start justify-between gap-3">
+                      <div className="flex items-center gap-3">
+                        <div className="w-12 h-12 rounded-2xl bg-[#1A2550] text-white flex items-center justify-center font-outfit font-black text-base shadow-md shrink-0">
+                          {lead.title.substring(0, 2).toUpperCase()}
+                        </div>
+                        <div>
+                          <span className="text-[10px] font-mono font-bold text-[#C41641] uppercase tracking-wider block">
+                            {lead.category}
+                          </span>
+                          <h3 className="font-outfit font-black text-base text-[#1A2550] leading-tight line-clamp-1 uppercase">
+                            {lead.title}
+                          </h3>
+                        </div>
+                      </div>
+
+                      <div className="flex items-center gap-1 px-2.5 py-1 rounded-full bg-amber-50 border border-amber-200 text-[#1A2550] font-mono text-xs font-bold shrink-0">
+                        <Star className="w-3.5 h-3.5 text-[#FBBF24] fill-[#FBBF24]" />
+                        <span>{lead.rating}</span>
+                        <span className="text-[#6B7299] text-[10px]">({lead.reviewsCount})</span>
+                      </div>
+                    </div>
+
+                    {/* Meta info */}
+                    <div className="space-y-2 text-xs text-[#6B7299] pt-2 border-t border-[#F0F1F5]">
+                      <div className="flex items-center gap-2">
+                        <MapPin className="w-3.5 h-3.5 text-[#C41641] shrink-0" />
+                        <span className="truncate">{lead.address || lead.city}</span>
+                      </div>
+                      <div className="flex items-center gap-2 font-mono">
+                        <Phone className="w-3.5 h-3.5 text-[#1A2550] shrink-0" />
+                        <span>{lead.phone}</span>
+                      </div>
+                    </div>
+
+                    {/* Status Badge */}
+                    <div className="pt-1">
+                      {hasNoWebsite ? (
+                        <div className="p-3 rounded-2xl bg-[#FDF1F3] border border-[#C41641]/20 flex items-center justify-between">
+                          <div className="flex items-center gap-2">
+                            <span className="w-2 h-2 rounded-full bg-[#C41641] animate-ping" />
+                            <span className="text-[11px] font-mono font-bold text-[#C41641]">✦ Opportunité Création</span>
+                          </div>
+                          <span className="text-[10px] font-mono text-[#6B7299]">Zéro site web</span>
+                        </div>
+                      ) : (
+                        <div className="p-3 rounded-2xl bg-[#E8EAF2] border border-[#1A2550]/20 flex items-center justify-between">
+                          <div className="flex items-center gap-2">
+                            <span className="w-2 h-2 rounded-full bg-[#1A2550]" />
+                            <span className="text-[11px] font-mono font-bold text-[#1A2550]">Opportunité Refonte</span>
+                          </div>
+                          <span className="text-[10px] font-mono text-[#6B7299] truncate max-w-[120px]">
+                            {lead.website}
+                          </span>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Actions */}
+                  <div className="pt-4 border-t border-[#F0F1F5] flex items-center justify-between gap-3">
+                    <span className="text-[11px] font-outfit font-bold text-[#6B7299]">
+                      {lead.status === 'clos' ? '🎉 Client Clos' : lead.status === 'site_genere' ? '🚀 Site Déployé' : 'À Auditer'}
+                    </span>
+
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        onNavigateToAudit(lead);
+                      }}
+                      className="btn-primary text-xs !py-2 !px-4 !rounded-xl flex items-center gap-1.5"
+                    >
+                      <span>Lancer Audit</span>
+                      <ArrowRight className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
+
+      {/* Manual Lead Modal */}
       {showAddModal && (
         <div className="fixed inset-0 z-50 bg-[#0F163A]/80 backdrop-blur-md flex items-center justify-center p-4">
-          <div className="bg-white border border-[#E0E3EF] rounded-3xl max-w-lg w-full p-8 space-y-6 shadow-2xl relative">
-            <div className="flex items-center justify-between">
-              <div>
-                <h3 className="text-xl font-outfit font-black text-[#1A2550] tracking-tight uppercase">Ajouter un commerce</h3>
-                <p className="text-xs text-[#6B7299]">Insérer directement dans la base SQLite persistante</p>
-              </div>
-              <button 
-                onClick={() => setShowAddModal(false)}
-                className="w-8 h-8 rounded-full bg-[#F4F2EE] hover:bg-[#E8EAF2] text-[#1A2550] flex items-center justify-center cursor-pointer transition font-bold"
-              >
-                ✕
-              </button>
-            </div>
+          <div className="bg-white border border-[#E0E3EF] rounded-3xl max-w-lg w-full p-8 space-y-6 shadow-2xl">
+            <h3 className="text-xl font-outfit font-black uppercase text-[#1A2550]">
+              Ajout Manuel d'un <span className="text-[#C41641]">Commerce</span>
+            </h3>
 
-            <form onSubmit={handleManualSubmit} className="space-y-4 text-xs">
-              <div className="space-y-1.5">
-                <label className="text-[#1A2550] font-outfit font-bold uppercase tracking-wider text-[10px]">Nom de l'établissement *</label>
+            <form onSubmit={handleCreateManual} className="space-y-4 text-xs">
+              <div>
+                <label className="text-[#1A2550] font-bold block mb-1">Nom de l'établissement *</label>
                 <input
                   type="text"
                   required
-                  placeholder="Ex: Boulangerie Les Délices de Paris"
+                  placeholder="ex: Atelier Peinture Parakou"
                   value={manualTitle}
-                  onChange={e => setManualTitle(e.target.value)}
-                  className="w-full px-4 py-3 rounded-xl bg-[#F4F2EE] border border-[#E0E3EF] text-[#1A2550] text-sm focus:outline-none focus:border-[#C41641] transition"
+                  onChange={(e) => setManualTitle(e.target.value)}
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-[#F4F2EE] border border-[#E0E3EF] text-[#1A2550]"
                 />
               </div>
 
               <div className="grid grid-cols-2 gap-3">
-                <div className="space-y-1.5">
-                  <label className="text-[#1A2550] font-outfit font-bold uppercase tracking-wider text-[10px]">Catégorie</label>
+                <div>
+                  <label className="text-[#1A2550] font-bold block mb-1">Corps de métier</label>
                   <input
                     type="text"
-                    placeholder="Ex: Artisan Boulanger"
+                    placeholder="Artisan Peintre"
                     value={manualCategory}
-                    onChange={e => setManualCategory(e.target.value)}
-                    className="w-full px-3.5 py-2.5 rounded-xl bg-[#F4F2EE] border border-[#E0E3EF] text-[#1A2550] focus:outline-none focus:border-[#C41641] transition"
+                    onChange={(e) => setManualCategory(e.target.value)}
+                    className="w-full px-3.5 py-2.5 rounded-xl bg-[#F4F2EE] border border-[#E0E3EF] text-[#1A2550]"
                   />
                 </div>
-                <div className="space-y-1.5">
-                  <label className="text-[#1A2550] font-outfit font-bold uppercase tracking-wider text-[10px]">Téléphone</label>
+
+                <div>
+                  <label className="text-[#1A2550] font-bold block mb-1">Téléphone</label>
                   <input
                     type="text"
-                    placeholder="Ex: 01 42 30 19 88"
+                    placeholder="+229 97 00 00 00"
                     value={manualPhone}
-                    onChange={e => setManualPhone(e.target.value)}
-                    className="w-full px-3.5 py-2.5 rounded-xl bg-[#F4F2EE] border border-[#E0E3EF] text-[#1A2550] focus:outline-none focus:border-[#C41641] transition"
+                    onChange={(e) => setManualPhone(e.target.value)}
+                    className="w-full px-3.5 py-2.5 rounded-xl bg-[#F4F2EE] border border-[#E0E3EF] text-[#1A2550]"
                   />
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 gap-3">
-                <div className="space-y-1.5">
-                  <label className="text-[#1A2550] font-outfit font-bold uppercase tracking-wider text-[10px]">Note Google (ex: 4.8)</label>
-                  <input
-                    type="number"
-                    step="0.1"
-                    min="1"
-                    max="5"
-                    value={manualRating}
-                    onChange={e => setManualRating(e.target.value)}
-                    className="w-full px-3.5 py-2.5 rounded-xl bg-[#F4F2EE] border border-[#E0E3EF] text-[#1A2550] focus:outline-none focus:border-[#C41641] font-mono transition"
-                  />
-                </div>
-                <div className="space-y-1.5">
-                  <label className="text-[#1A2550] font-outfit font-bold uppercase tracking-wider text-[10px]">Nombre d'avis</label>
-                  <input
-                    type="number"
-                    value={manualReviews}
-                    onChange={e => setManualReviews(e.target.value)}
-                    className="w-full px-3.5 py-2.5 rounded-xl bg-[#F4F2EE] border border-[#E0E3EF] text-[#1A2550] focus:outline-none focus:border-[#C41641] font-mono transition"
-                  />
-                </div>
-              </div>
-
-              <div className="space-y-1.5">
-                <label className="text-[#1A2550] font-outfit font-bold uppercase tracking-wider text-[10px]">Adresse</label>
+              <div>
+                <label className="text-[#1A2550] font-bold block mb-1">Adresse ou Ville</label>
                 <input
                   type="text"
-                  placeholder="Ex: 56 Rue du Faubourg Saint-Antoine, Paris"
+                  placeholder="Quartier Titirou, Parakou"
                   value={manualAddress}
-                  onChange={e => setManualAddress(e.target.value)}
-                  className="w-full px-3.5 py-2.5 rounded-xl bg-[#F4F2EE] border border-[#E0E3EF] text-[#1A2550] focus:outline-none focus:border-[#C41641] transition"
+                  onChange={(e) => setManualAddress(e.target.value)}
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-[#F4F2EE] border border-[#E0E3EF] text-[#1A2550]"
                 />
               </div>
 
-              <div className="space-y-1.5">
-                <label className="text-[#1A2550] font-outfit font-bold uppercase tracking-wider text-[10px]">Site web existant (laisser vide si aucun)</label>
+              <div>
+                <label className="text-[#1A2550] font-bold block mb-1">Site Web actuel (Laisser vide si aucun)</label>
                 <input
                   type="text"
-                  placeholder="Ex: http://mon-ancien-site.fr"
+                  placeholder="https://ancien-site.com"
                   value={manualWebsite}
-                  onChange={e => setManualWebsite(e.target.value)}
-                  className="w-full px-3.5 py-2.5 rounded-xl bg-[#F4F2EE] border border-[#E0E3EF] text-[#1A2550] focus:outline-none focus:border-[#C41641] font-mono transition"
+                  onChange={(e) => setManualWebsite(e.target.value)}
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-[#F4F2EE] border border-[#E0E3EF] text-[#1A2550]"
                 />
               </div>
 
-              <div className="pt-3 flex justify-end gap-3">
+              <div className="pt-3 flex justify-end gap-2.5">
                 <button
                   type="button"
                   onClick={() => setShowAddModal(false)}
-                  className="btn-ghost text-xs !py-2.5 !px-5"
+                  className="btn-ghost text-xs !py-2.5 !px-4"
                 >
                   Annuler
                 </button>
@@ -430,7 +469,7 @@ export const Phase1Discovery = ({
                   type="submit"
                   className="btn-primary text-xs !py-2.5 !px-5"
                 >
-                  Enregistrer dans SQLite
+                  Ajouter au Pipeline
                 </button>
               </div>
             </form>

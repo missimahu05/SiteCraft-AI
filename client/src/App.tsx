@@ -9,6 +9,7 @@ import { Phase4Outreach } from './components/Phase4Outreach';
 import { Phase5Closing } from './components/Phase5Closing';
 import { PdfExportModal } from './components/PdfExportModal';
 import { SettingsModal } from './components/SettingsModal';
+import { AntigravitySwarmPanel } from './components/AntigravitySwarmPanel';
 
 export function App() {
   const [leads, setLeads] = useState<BusinessProfile[]>([]);
@@ -172,6 +173,7 @@ export function App() {
             {activeTab === 'discovery' && (
               <Phase1Discovery
                 leads={leads}
+                selectedLead={selectedLead}
                 onSelectLead={handleSelectLead}
                 onNavigateToAudit={handleNavigateToAudit}
                 onAddNewLead={handleAddNewLead}
@@ -213,6 +215,16 @@ export function App() {
                 selectedLead={selectedLead}
                 leads={leads}
                 onMarkLeadClaimed={(leadId, domain) => handleTriggerPayment(leadId, domain)}
+              />
+            )}
+
+            {activeTab === 'swarm' && (
+              <AntigravitySwarmPanel
+                selectedLead={selectedLead}
+                onRefreshLeads={async () => {
+                  const refreshed = await api.getLeads();
+                  setLeads(refreshed);
+                }}
               />
             )}
           </>

@@ -11,6 +11,8 @@ export interface ILead extends Document {
   rating: number;
   reviewsCount: number;
   photos: string[];
+  lat?: number;
+  lng?: number;
   screenshot_url?: string;
   audit?: {
     score_global: string;
@@ -42,6 +44,8 @@ const LeadSchema = new Schema<ILead>({
   website: { type: String, default: '' },
   rating: { type: Number, default: 0 },
   reviewsCount: { type: Number, default: 0 },
+  lat: { type: Number, default: 9.3371 },
+  lng: { type: Number, default: 2.6303 },
   photos: { type: [String], default: [] },
   screenshot_url: { type: String, default: '' },
   audit: {

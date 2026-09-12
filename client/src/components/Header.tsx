@@ -1,5 +1,5 @@
 import type { ActiveTab, BusinessProfile, StripeEvent } from '../types';
-import { MapPin, Eye, Cloud, Send, CreditCard, FileDown, Settings } from 'lucide-react';
+import { MapPin, Eye, Cloud, Send, CreditCard, FileDown, Settings, Bot } from 'lucide-react';
 
 interface HeaderProps {
   activeTab: ActiveTab;
@@ -25,11 +25,12 @@ export const Header = ({
   const revenueEur = closedCount * 490;
 
   const tabs: { id: ActiveTab; label: string; step: string; icon: React.ComponentType<{ className?: string }> }[] = [
-    { id: 'discovery', label: 'Discovery & Scraping', step: '01', icon: MapPin },
+    { id: 'discovery', label: 'Discovery & Carte Maps', step: '01', icon: MapPin },
     { id: 'audit', label: 'Audit Vision & Scoring', step: '02', icon: Eye },
     { id: 'generator', label: 'Studio Cloudflare Pages', step: '03', icon: Cloud },
     { id: 'outreach', label: 'Mockup & Prospection', step: '04', icon: Send },
     { id: 'closing', label: 'FeexPay & Closing 490€', step: '05', icon: CreditCard },
+    { id: 'swarm', label: 'Essaim IA Antigravity', step: '06', icon: Bot },
   ];
 
   return (

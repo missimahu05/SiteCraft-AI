@@ -159,5 +159,31 @@ export const api = {
     const json = await res.json();
     if (!json.success) throw new Error(json.error);
     return json.data;
+  },
+
+  // Antigravity AI Agents Swarm
+  async getAgentsStatus(): Promise<any[]> {
+    const res = await fetch(`${API_BASE}/agents/status`);
+    const json = await res.json();
+    if (!json.success) throw new Error(json.error);
+    return json.data;
+  },
+
+  async getAgentLogs(): Promise<any[]> {
+    const res = await fetch(`${API_BASE}/agents/logs`);
+    const json = await res.json();
+    if (!json.success) throw new Error(json.error);
+    return json.data;
+  },
+
+  async dispatchAgentTask(role: string, payload: any): Promise<any> {
+    const res = await fetch(`${API_BASE}/agents/dispatch`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ role, payload })
+    });
+    const json = await res.json();
+    if (!json.success) throw new Error(json.error);
+    return json.data;
   }
 };

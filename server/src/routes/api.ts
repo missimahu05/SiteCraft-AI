@@ -4,6 +4,7 @@ import { CloudflareService } from '../services/cloudflareService.js';
 import { FeexPayService } from '../services/feexpayService.js';
 import { SiteGeneratorService } from '../services/siteGeneratorService.js';
 import { getDBStatus } from '../config/db.js';
+import { SwarmOrchestrator } from '../agents/orchestrator.js';
 
 export const apiRouter = Router();
 
@@ -257,6 +258,37 @@ apiRouter.get('/stats', async (req, res) => {
         revenueEur: Math.round(revenue / 655.957) || 490
       }
     });
+  } catch (err: any) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+// ==========================================
+// 8. ANTIGRAVITY AI AGENTS SWARM
+// ==========================================
+apiRouter.get('/agents/status', (req, res) => {
+  try {
+    const agents = SwarmOrchestrator.getAgentsStatus();
+    res.json({ success: true, data: agents });
+  } catch (err: any) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+apiRouter.get('/agents/logs', (req, res) => {
+  try {
+    const logs = SwarmOrchestrator.getRecentLogs(50);
+    res.json({ success: true, data: logs });
+  } catch (err: any) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+apiRouter.post('/agents/dispatch', async (req, res) => {
+  const { role, payload } = req.body;
+  try {
+    const result = await SwarmOrchestrator.dispatchTask(role, payload);
+    res.json({ success: true, data: result });
   } catch (err: any) {
     res.status(500).json({ success: false, error: err.message });
   }

@@ -74,6 +74,8 @@ export interface BusinessProfile {
   city?: string;
   website: string | null;
   photos: string[];
+  lat?: number;
+  lng?: number;
   screenshot_url?: string;
   tagline?: string;
   description?: string;
@@ -111,4 +113,28 @@ export interface StripeEvent {
   };
 }
 
-export type ActiveTab = 'discovery' | 'audit' | 'generator' | 'outreach' | 'closing';
+export type ActiveTab = 'discovery' | 'audit' | 'generator' | 'outreach' | 'closing' | 'swarm';
+
+export type AgentRole = 'scout' | 'auditor' | 'architect' | 'devops' | 'closer';
+export type AgentState = 'IDLE' | 'THINKING' | 'EXECUTING_TOOL' | 'COMPLETED' | 'ERROR';
+
+export interface AgentActionLog {
+  id: string;
+  agentRole: AgentRole;
+  agentName: string;
+  timestamp: string;
+  type: 'thought' | 'tool_call' | 'tool_result' | 'system' | 'output';
+  message: string;
+}
+
+export interface AgentStatusInfo {
+  role: AgentRole;
+  name: string;
+  title: string;
+  description: string;
+  avatarColor: string;
+  state: AgentState;
+  currentTask?: string;
+  tools: string[];
+  tasksCompleted: number;
+}
