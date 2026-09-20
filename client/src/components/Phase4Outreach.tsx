@@ -78,6 +78,18 @@ Agence Digitale Locale
     window.open(mailto, '_blank');
   };
 
+  const handleOpenWhatsapp = () => {
+    const cleanPhone = (activeLead.phone || '').replace(/[^0-9]/g, '');
+    const waUrl = `https://wa.me/${cleanPhone}?text=${encodeURIComponent(whatsappMessage)}`;
+    window.open(waUrl, '_blank');
+  };
+
+  const handleOpenSms = () => {
+    const cleanPhone = (activeLead.phone || '').replace(/[^0-9]/g, '');
+    const smsUrl = `sms:${cleanPhone}?body=${encodeURIComponent(smsMessage)}`;
+    window.open(smsUrl, '_blank');
+  };
+
   return (
     <div className="space-y-8">
       {/* Banner */}
@@ -264,11 +276,31 @@ Agence Digitale Locale
                 </button>
               )}
 
+              {channel === 'whatsapp' && (
+                <button
+                  onClick={handleOpenWhatsapp}
+                  className="w-full sm:w-auto flex-1 py-3.5 px-6 rounded-2xl bg-emerald-600 hover:bg-emerald-700 text-white font-outfit font-black text-xs uppercase tracking-wider transition cursor-pointer flex items-center justify-center gap-2 shadow-lg shadow-emerald-600/20"
+                >
+                  <MessageSquare className="w-4 h-4" />
+                  <span>Envoyer sur WhatsApp</span>
+                </button>
+              )}
+
+              {channel === 'sms' && (
+                <button
+                  onClick={handleOpenSms}
+                  className="w-full sm:w-auto flex-1 py-3.5 px-6 rounded-2xl bg-[#1A2550] hover:bg-[#2D3553] text-white font-outfit font-black text-xs uppercase tracking-wider transition cursor-pointer flex items-center justify-center gap-2 shadow-lg shadow-[#1A2550]/20"
+                >
+                  <PhoneCall className="w-4 h-4" />
+                  <span>Envoyer par SMS</span>
+                </button>
+              )}
+
               <button
                 onClick={() => onNavigateToClosing(activeLead)}
                 className="btn-primary w-full sm:w-auto flex-1 !py-3.5 text-xs font-black"
               >
-                <span>Phase 05 : Stripe & Closing</span>
+                <span>Phase 05 : FeexPay & Closing</span>
                 <ArrowRight className="w-4 h-4" />
               </button>
             </div>

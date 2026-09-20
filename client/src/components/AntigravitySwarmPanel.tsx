@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import type { BusinessProfile } from '../types';
 import { api } from '../api/client';
-import { Bot, Terminal, Play, RefreshCw, Zap } from 'lucide-react';
+import { Bot, Terminal, Play, RefreshCw, Zap, MapPin, Search } from 'lucide-react';
 
 interface SwarmPanelProps {
   selectedLead: BusinessProfile | null;
@@ -12,6 +12,8 @@ export const AntigravitySwarmPanel = ({ selectedLead, onRefreshLeads }: SwarmPan
   const [agents, setAgents] = useState<any[]>([]);
   const [logs, setLogs] = useState<any[]>([]);
   const [isRunningAll, setIsRunningAll] = useState(false);
+  const [targetCity, setTargetCity] = useState('Parakou');
+  const [targetQuery, setTargetQuery] = useState('peintre');
 
   const fetchStatusAndLogs = async () => {
     try {
@@ -70,6 +72,41 @@ export const AntigravitySwarmPanel = ({ selectedLead, onRefreshLeads }: SwarmPan
     }
   };
 
+  const handleRunAutopilotMission = async () => {
+    setIsRunningAll(true);
+    try {
+      // 1. ScoutAgent live search
+      const discovered = await api.dispatchAgentTask('scout', { query: targetQuery, location: targetCity });
+      await fetchStatusAndLogs();
+      onRefreshLeads();
+
+      const leadToProcess = (discovered && discovered.length > 0) ? discovered[0] : selectedLead;
+      if (leadToProcess) {
+        // 2. AuditorAgent
+        await api.dispatchAgentTask('auditor', { leadId: leadToProcess.id });
+        await fetchStatusAndLogs();
+
+        // 3. ArchitectAgent
+        await api.dispatchAgentTask('architect', { leadId: leadToProcess.id });
+        await fetchStatusAndLogs();
+
+        // 4. DevOpsAgent
+        await api.dispatchAgentTask('devops', { leadId: leadToProcess.id });
+        await fetchStatusAndLogs();
+
+        // 5. CloserAgent
+        await api.dispatchAgentTask('closer', { leadId: leadToProcess.id, action: 'pitch' });
+        await fetchStatusAndLogs();
+
+        onRefreshLeads();
+      }
+    } catch (err) {
+      console.error('Autopilot error:', err);
+    } finally {
+      setIsRunningAll(false);
+    }
+  };
+
   return (
     <div className="space-y-8">
       {/* Banner */}
@@ -84,20 +121,68 @@ export const AntigravitySwarmPanel = ({ selectedLead, onRefreshLeads }: SwarmPan
           </h2>
 
           <p className="text-sm text-[#6B7299] max-w-3xl leading-relaxed">
-            Chaque phase du cycle de vie de l'agence est déléguée à un agent IA spécialisé piloté par le SDK Antigravity : Détection, Audit Vision, Architecture React, Déploiement Edge et Closing FeexPay.
+            Chaque phase du cycle de vie de l'agence est déléguée à un agent IA spécialisé : <strong>Scout</strong> (détection OSM/Maps en direct), <strong>Auditor</strong> (audit vision & UX), <strong>Architect</strong> (code React modulaire), <strong>DevOps</strong> (Cloudflare Anycast) et <strong>Closer</strong> (pitch WhatsApp & FeexPay).
           </p>
         </div>
 
-        {selectedLead && (
+        {/* Autopilot Mission Controls */}
+        <div className="flex flex-col sm:flex-row items-center gap-3 shrink-0 bg-[#F4F2EE] p-3 rounded-2xl border border-[#E0E3EF] w-full lg:w-auto">
+          <div className="flex items-center gap-2 w-full sm:w-auto">
+            <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white border border-[#E0E3EF] text-xs">
+              <MapPin className="w-3.5 h-3.5 text-[#C41641]" />
+              <select
+                value={targetCity}
+                onChange={(e) => setTargetCity(e.target.value)}
+                className="bg-transparent font-outfit font-bold text-[#1A2550] focus:outline-none cursor-pointer"
+              >
+                <option value="Parakou">Parakou</option>
+                <option value="Cotonou">Cotonou</option>
+                <option value="Porto-Novo">Porto-Novo</option>
+                <option value="Abidjan">Abidjan</option>
+                <option value="Dakar">Dakar</option>
+                <option value="Lomé">Lomé</option>
+              </select>
+            </div>
+
+            <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white border border-[#E0E3EF] text-xs">
+              <Search className="w-3.5 h-3.5 text-[#1A2550]" />
+              <select
+                value={targetQuery}
+                onChange={(e) => setTargetQuery(e.target.value)}
+                className="bg-transparent font-outfit font-bold text-[#1A2550] focus:outline-none cursor-pointer"
+              >
+                <option value="peintre">Peintre</option>
+                <option value="plombier">Plombier</option>
+                <option value="boulangerie">Boulangerie</option>
+                <option value="restaurant">Restaurant</option>
+                <option value="couture">Couture</option>
+                <option value="mecanique">Mécanique</option>
+              </select>
+            </div>
+          </div>
+
           <button
-            onClick={handleRunAutonomousPipeline}
+            onClick={handleRunAutopilotMission}
             disabled={isRunningAll}
-            className="btn-primary text-xs !py-3.5 !px-6 !rounded-2xl flex items-center gap-2 shrink-0 shadow-xl"
+            className="btn-primary text-xs !py-3 !px-5 !rounded-xl flex items-center justify-center gap-2 shrink-0 shadow-lg w-full sm:w-auto cursor-pointer"
+            title="Détecter en direct puis exécuter le cycle complet (Scout ➔ Closer)"
           >
             {isRunningAll ? <RefreshCw className="w-4 h-4 animate-spin" /> : <Zap className="w-4 h-4" />}
-            <span>{isRunningAll ? 'Pipeline en cours...' : 'Exécuter Tout le Pipeline Autonome'}</span>
+            <span>{isRunningAll ? 'Mission en cours...' : 'Lancer Mission Autopilot'}</span>
           </button>
-        )}
+
+          {selectedLead && (
+            <button
+              onClick={handleRunAutonomousPipeline}
+              disabled={isRunningAll}
+              className="px-4 py-3 rounded-xl bg-white hover:bg-[#FAF9F6] border border-[#E0E3EF] text-[#1A2550] font-outfit font-bold text-xs flex items-center justify-center gap-1.5 shrink-0 shadow-sm cursor-pointer w-full sm:w-auto"
+              title={`Exécuter les 4 phases sur le prospect actif : ${selectedLead.title}`}
+            >
+              <Play className="w-3.5 h-3.5 text-[#C41641]" />
+              <span className="truncate max-w-[160px]">Pipeline : {selectedLead.title}</span>
+            </button>
+          )}
+        </div>
       </div>
 
       {/* Agents Cards Grid */}

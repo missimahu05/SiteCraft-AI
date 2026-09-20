@@ -418,4 +418,219 @@ export default function GeneratedWebsite() {
 }
 `;
   }
+
+  /**
+   * Générer le code HTML5 autonome complet prêt pour la production (Zero-dependency, CDN Tailwind, SEO JSON-LD)
+   */
+  static generateStandaloneHtml(lead: any): string {
+    const data = this.generateSiteData(lead);
+    const cleanSubdomain = lead.title.toLowerCase().replace(/[^a-z0-9]/g, '-').replace(/-+/g, '-');
+    const schemaOrg = {
+      "@context": "https://schema.org",
+      "@type": "LocalBusiness",
+      "name": lead.title,
+      "telephone": lead.phone,
+      "address": {
+        "@type": "PostalAddress",
+        "streetAddress": lead.address,
+        "addressLocality": lead.city || "Parakou",
+        "addressCountry": "BJ"
+      },
+      "aggregateRating": {
+        "@type": "AggregateRating",
+        "ratingValue": String(lead.rating || 4.9),
+        "reviewCount": String(lead.reviewsCount || 40)
+      }
+    };
+
+    return `<!DOCTYPE html>
+<html lang="fr" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>${lead.title} | ${data.hero.badge}</title>
+  <meta name="description" content="${data.hero.subtitle.replace(/"/g, '&quot;')}">
+  
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brandNavy: '#1A2550',
+            brandCrimson: '#C41641',
+            brandEcru: '#F4F2EE',
+            brandSlate: '#6B7299'
+          },
+          fontFamily: {
+            outfit: ['Outfit', 'sans-serif'],
+            sans: ['Plus Jakarta Sans', 'sans-serif']
+          }
+        }
+      }
+    }
+  </script>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- Lucide Icons CDN -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <!-- Schema.org JSON-LD LocalBusiness -->
+  <script type="application/ld+json">
+    ${JSON.stringify(schemaOrg, null, 2)}
+  </script>
+</head>
+<body class="bg-[#F4F2EE] text-[#2D3553] font-sans antialiased selection:bg-[#C41641] selection:text-white">
+
+  <!-- TOP HEADER -->
+  <header class="fixed top-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-md border-b border-[#E0E3EF] py-4 shadow-sm">
+    <div class="max-w-6xl mx-auto px-6 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-xl bg-[#1A2550] flex items-center justify-center text-white font-outfit font-black tracking-wider shadow-md">
+          ${lead.title.substring(0, 2).toUpperCase()}
+        </div>
+        <div>
+          <span class="text-[10px] font-mono tracking-widest text-[#C41641] font-bold block uppercase">${data.hero.badge}</span>
+          <span class="text-base font-outfit font-black tracking-tight text-[#1A2550] uppercase">${lead.title}</span>
+        </div>
+      </div>
+
+      <div class="flex items-center gap-4">
+        <a href="tel:${data.hero.phone}" class="hidden sm:flex items-center gap-2 text-xs font-mono font-bold text-[#1A2550] bg-[#F4F2EE] px-4 py-2 rounded-full border border-[#E0E3EF] hover:border-[#C41641] transition">
+          <i data-lucide="phone" class="w-3.5 h-3.5 text-[#C41641]"></i>
+          <span>${data.hero.phone}</span>
+        </a>
+        <a href="#contact" class="px-5 py-2.5 rounded-full bg-[#C41641] hover:bg-[#A01235] text-white text-xs font-outfit font-black uppercase tracking-wider transition shadow-lg shadow-[#C41641]/20">
+          Devis Gratuit
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- HERO SECTION -->
+  <section class="pt-32 pb-20 px-6 max-w-6xl mx-auto">
+    <div class="max-w-3xl space-y-6">
+      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#FDF1F3] border border-[#C41641]/20 text-[#C41641] text-xs font-mono font-bold">
+        <span>✦</span> <span>${data.hero.badge}</span>
+      </div>
+      <h1 class="text-4xl sm:text-6xl font-outfit font-black italic tracking-tighter uppercase text-[#1A2550] leading-[1.05]">
+        ${lead.title} <span class="text-[#C41641]">${data.hero.titleAccent}</span>
+      </h1>
+      <p class="text-base sm:text-lg text-[#6B7299] leading-relaxed max-w-2xl">
+        ${data.hero.subtitle}
+      </p>
+      <div class="flex flex-wrap gap-4 pt-2">
+        <a href="#contact" class="px-7 py-3.5 rounded-2xl bg-[#C41641] text-white font-outfit font-black uppercase text-xs tracking-wider shadow-xl shadow-[#C41641]/25 hover:scale-105 transition">
+          ${data.hero.ctaPrimary}
+        </a>
+        <a href="https://wa.me/${lead.phone.replace(/[^0-9]/g, '')}" target="_blank" class="px-7 py-3.5 rounded-2xl bg-white border border-[#1A2550] text-[#1A2550] font-outfit font-bold uppercase text-xs tracking-wider hover:bg-[#F4F2EE] transition flex items-center gap-2">
+          <i data-lucide="message-circle" class="w-4 h-4 text-emerald-600"></i>
+          <span>Contacter sur WhatsApp</span>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- TRUST BAR -->
+  <section class="py-8 bg-white border-y border-[#E0E3EF]">
+    <div class="max-w-6xl mx-auto px-6 grid grid-cols-2 md:grid-cols-4 gap-6">
+      ${data.trustBar.stats.map(s => `
+      <div class="space-y-1">
+        <div class="text-2xl sm:text-3xl font-outfit font-black italic tracking-tight text-[#C41641]">${s.num}</div>
+        <div class="text-xs text-[#6B7299] font-medium">${s.label}</div>
+      </div>`).join('')}
+    </div>
+  </section>
+
+  <!-- SERVICES -->
+  <section id="services" class="py-20 px-6 max-w-6xl mx-auto space-y-12">
+    <div class="space-y-2">
+      <p class="text-xs font-mono uppercase tracking-widest text-[#C41641] font-bold">Nos Prestations</p>
+      <h2 class="text-3xl sm:text-4xl font-outfit font-black italic uppercase text-[#1A2550]">
+        Savoir-faire & <span class="text-[#C41641]">Excellence</span>
+      </h2>
+    </div>
+    <div class="grid md:grid-cols-3 gap-6">
+      ${data.services.map(s => `
+      <div class="bg-white rounded-3xl p-6 border border-[#E0E3EF] shadow-sm space-y-4 hover:-translate-y-1 transition duration-300">
+        <div class="text-xs font-mono font-bold text-[#C41641]">${s.num}</div>
+        <h3 class="text-lg font-outfit font-black uppercase text-[#1A2550]">${s.title}</h3>
+        <p class="text-xs text-[#6B7299] leading-relaxed">${s.desc}</p>
+        <ul class="space-y-2 pt-2 border-t border-[#F0F1F5] text-xs text-[#2D3553]">
+          ${s.features.map(f => `<li class="flex items-center gap-2"><i data-lucide="check" class="w-3.5 h-3.5 text-[#C41641]"></i> ${f}</li>`).join('')}
+        </ul>
+      </div>`).join('')}
+    </div>
+  </section>
+
+  <!-- REVIEWS -->
+  <section class="py-20 bg-white border-y border-[#E0E3EF]">
+    <div class="max-w-6xl mx-auto px-6 space-y-12">
+      <div class="space-y-2 text-center max-w-xl mx-auto">
+        <p class="text-xs font-mono uppercase tracking-widest text-[#C41641] font-bold">Avis Clients Vérifiés</p>
+        <h2 class="text-3xl sm:text-4xl font-outfit font-black italic uppercase text-[#1A2550]">
+          La Confiance de nos <span class="text-[#C41641]">Clients</span>
+        </h2>
+      </div>
+      <div class="grid md:grid-cols-3 gap-6">
+        ${data.reviews.map(r => `
+        <div class="p-6 rounded-3xl bg-[#FAF9F6] border border-[#E0E3EF] space-y-4 flex flex-col justify-between">
+          <div class="space-y-2">
+            <div class="flex text-amber-400">★★★★★</div>
+            <p class="text-xs text-[#2D3553] italic leading-relaxed">"${r.text}"</p>
+          </div>
+          <div class="pt-2 border-t border-[#F0F1F5] flex justify-between items-center text-[11px]">
+            <span class="font-bold text-[#1A2550]">${r.author}</span>
+            <span class="text-[#6B7299] font-mono">${r.date}</span>
+          </div>
+        </div>`).join('')}
+      </div>
+    </div>
+  </section>
+
+  <!-- CONTACT & FOOTER -->
+  <footer id="contact" class="bg-[#1A2550] text-white py-16 px-6">
+    <div class="max-w-6xl mx-auto grid md:grid-cols-2 gap-12">
+      <div class="space-y-6">
+        <h3 class="text-2xl font-outfit font-black uppercase tracking-tight">
+          Prêt à concrétiser votre <span class="text-[#C41641]">Projet</span> ?
+        </h3>
+        <p class="text-xs text-zinc-300 leading-relaxed max-w-md">
+          Contactez-nous directement par téléphone ou envoyez un message. Devis gratuit sans engagement.
+        </p>
+        <div class="space-y-3 text-xs font-mono">
+          <div class="flex items-center gap-3"><i data-lucide="map-pin" class="w-4 h-4 text-[#C41641]"></i> ${data.contact.address}</div>
+          <div class="flex items-center gap-3"><i data-lucide="phone" class="w-4 h-4 text-[#C41641]"></i> ${data.contact.phone}</div>
+          <div class="flex items-center gap-3"><i data-lucide="clock" class="w-4 h-4 text-[#C41641]"></i> ${data.contact.hours}</div>
+        </div>
+      </div>
+
+      <div class="bg-white text-[#2D3553] p-7 rounded-3xl shadow-xl space-y-4">
+        <h4 class="font-outfit font-black uppercase text-sm text-[#1A2550]">Demande Express de Devis</h4>
+        <input type="text" placeholder="Votre Nom complet" class="w-full px-3.5 py-2.5 rounded-xl bg-[#F4F2EE] border border-[#E0E3EF] text-xs" />
+        <input type="tel" placeholder="Votre Numéro de téléphone" class="w-full px-3.5 py-2.5 rounded-xl bg-[#F4F2EE] border border-[#E0E3EF] text-xs" />
+        <textarea placeholder="Description de votre besoin..." rows="3" class="w-full px-3.5 py-2.5 rounded-xl bg-[#F4F2EE] border border-[#E0E3EF] text-xs"></textarea>
+        <button class="w-full py-3 rounded-xl bg-[#C41641] hover:bg-[#A01235] text-white font-outfit font-black uppercase text-xs tracking-wider transition shadow-md">
+          Envoyer ma demande
+        </button>
+      </div>
+    </div>
+
+    <div class="max-w-6xl mx-auto mt-12 pt-6 border-t border-white/10 text-center text-zinc-400 text-xs font-mono">
+      © ${new Date().getFullYear()} ${lead.title}. Tous droits réservés. Site propulsé par SiteCraft-AI.
+    </div>
+  </footer>
+
+  <script>
+    lucide.createIcons();
+  </script>
+</body>
+</html>`;
+  }
 }
+

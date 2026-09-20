@@ -103,6 +103,21 @@ export const Phase3Generator = ({
     URL.revokeObjectURL(url);
   };
 
+  const downloadHtml = async () => {
+    try {
+      const res = await api.getGeneratedSiteHtml(activeLead.id);
+      const blob = new Blob([res.html], { type: 'text/html' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `site-${cleanSubdomain}.html`;
+      a.click();
+      URL.revokeObjectURL(url);
+    } catch (err) {
+      console.error('Error downloading HTML:', err);
+    }
+  };
+
   return (
     <div className="space-y-8">
       {/* Banner */}
@@ -219,21 +234,31 @@ export const Phase3Generator = ({
               </div>
             </div>
 
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 flex-wrap">
               <button
                 onClick={copyCodeToClipboard}
                 className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white/10 hover:bg-white/20 text-xs font-mono font-bold transition cursor-pointer"
               >
                 {copiedCode ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
-                <span>{copiedCode ? 'Copié !' : 'Copier le Code'}</span>
+                <span>{copiedCode ? 'Copié !' : 'Copier'}</span>
               </button>
 
               <button
                 onClick={downloadCode}
-                className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#C41641] hover:bg-[#A01235] text-xs font-outfit font-black uppercase tracking-wider transition cursor-pointer"
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white/15 hover:bg-white/25 text-xs font-mono font-bold transition cursor-pointer"
+                title="Télécharger le composant React App.jsx"
               >
                 <Download className="w-3.5 h-3.5" />
-                <span>Télécharger</span>
+                <span>App.jsx</span>
+              </button>
+
+              <button
+                onClick={downloadHtml}
+                className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-[#C41641] hover:bg-[#A01235] text-xs font-outfit font-black uppercase tracking-wider transition cursor-pointer shadow-md"
+                title="Télécharger le site complet en HTML autonome (Zero dépendance)"
+              >
+                <Download className="w-3.5 h-3.5" />
+                <span>Site HTML</span>
               </button>
             </div>
           </div>

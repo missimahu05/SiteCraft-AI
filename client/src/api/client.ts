@@ -135,6 +135,13 @@ export const api = {
     return json.data;
   },
 
+  async getGeneratedSiteHtml(leadId: string): Promise<{ html: string; filename: string }> {
+    const res = await fetch(`${API_BASE}/generator/${leadId}/html`);
+    const json = await res.json();
+    if (!json.success) throw new Error(json.error);
+    return json.data;
+  },
+
   // Settings & DB Status
   async getSettings(): Promise<{ settings: Record<string, string>; dbStatus: any }> {
     const res = await fetch(`${API_BASE}/settings`);

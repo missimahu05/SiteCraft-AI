@@ -145,6 +145,17 @@ apiRouter.get('/generator/:leadId/code', async (req, res) => {
   }
 });
 
+apiRouter.get('/generator/:leadId/html', async (req, res) => {
+  try {
+    const lead = await DataStore.getLeadById(req.params.leadId);
+    if (!lead) return res.status(404).json({ success: false, error: 'Lead introuvable' });
+    const html = SiteGeneratorService.generateStandaloneHtml(lead);
+    res.json({ success: true, data: { html, filename: 'index.html' } });
+  } catch (err: any) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
 // ==========================================
 // 4. CLOUDFLARE PAGES ANYCAST DEPLOYMENT
 // ==========================================
