@@ -16,20 +16,20 @@ export const HeroSection = ({
   reviewCount
 }: HeroProps) => {
   return (
-    <section className="relative min-h-[75vh] flex items-center justify-center bg-[#F4F2EE] text-[#2D3553] px-6 overflow-hidden">
+    <section className="relative min-h-[75vh] flex items-center justify-center bg-slate-50 text-slate-800 px-6 overflow-hidden">
       {/* Background soft image with overlay */}
       <div 
         className="absolute inset-0 bg-cover bg-center opacity-15 filter blur-[1px] scale-105" 
         style={{ backgroundImage: `url(${heroImage})` }} 
       />
-      <div className="absolute inset-0 bg-gradient-to-t from-[#F4F2EE] via-transparent to-[#F4F2EE]/80" />
+      <div className="absolute inset-0 bg-gradient-to-t from-slate-50 via-transparent to-slate-50/80" />
 
       <div className="relative z-10 max-w-4xl text-center space-y-6 py-16">
-        <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white border border-[#E0E3EF] text-[#C41641] text-xs font-outfit font-black tracking-wider uppercase shadow-sm">
+        <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#FFF7ED] border border-[#FED7AA] text-[#EA580C] text-xs font-outfit font-black tracking-wider uppercase shadow-sm">
           ★ {rating.toFixed(1)} / 5 ({reviewCount} avis certifiés Google Maps)
         </div>
 
-        <h1 className="text-4xl sm:text-6xl md:text-7xl font-outfit font-black tracking-tight uppercase italic text-[#1A2550] leading-none">
+        <h1 className="text-4xl sm:text-6xl md:text-7xl font-outfit font-black tracking-tight uppercase italic text-[#0F172A] leading-none">
           {businessName}
         </h1>
 

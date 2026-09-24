@@ -3,7 +3,7 @@ import { LeadModel } from './Lead.js';
 import { PaymentModel } from './Payment.js';
 import { SettingModel } from './Setting.js';
 
-// Realistic initial seed leads
+// Realistic initial seed leads with exact geographic coordinates
 const initialSeedLeads = [
   {
     id: 'lead-artisan-01',
@@ -11,6 +11,8 @@ const initialSeedLeads = [
     category: 'Artisan Peintre & Décorateur',
     address: 'Quartier Titirou, Parakou, Bénin',
     city: 'Parakou',
+    lat: 9.3371,
+    lng: 2.6303,
     phone: '+229 97 00 12 34',
     website: '',
     rating: 4.9,
@@ -38,10 +40,62 @@ const initialSeedLeads = [
   },
   {
     id: 'lead-artisan-02',
+    title: 'Menuiserie Ébénisterie d\'Art Borgou',
+    category: 'Menuisier & Agenceur Bois',
+    address: 'Quartier Banikanni, Parakou, Bénin',
+    city: 'Parakou',
+    lat: 9.3520,
+    lng: 2.6180,
+    phone: '+229 96 45 12 89',
+    website: '',
+    rating: 4.8,
+    reviewsCount: 31,
+    photos: [
+      'https://images.unsplash.com/photo-1538688525198-9b88f6f53126?q=80&w=800'
+    ],
+    screenshot_url: 'https://images.unsplash.com/photo-1538688525198-9b88f6f53126?q=80&w=800',
+    audit: {
+      score_global: '3.9',
+      mobile: 25,
+      seo: 38,
+      performance: 42,
+      points_forts: ['Fabrications sur-mesure de haute qualité', 'Très forte fidélité client'],
+      points_faibles: ['Aucune présence web', 'Pas de catalogue digital en ligne']
+    },
+    generatedSite: {
+      slug: 'menuiserie-art-borgou',
+      cloudflareUrl: 'https://menuiserie-art-borgou.pages.dev',
+      customDomain: '',
+      status: 'deployed'
+    },
+    status: 'nouveau'
+  },
+  {
+    id: 'lead-artisan-03',
+    title: 'Garage Auto & Climatisation Express',
+    category: 'Mécanique & Diagnostic Automobile',
+    address: 'Grand Marché Zongo, Parakou, Bénin',
+    city: 'Parakou',
+    lat: 9.3440,
+    lng: 2.6240,
+    phone: '+229 97 88 55 21',
+    website: '',
+    rating: 4.7,
+    reviewsCount: 54,
+    photos: [
+      'https://images.unsplash.com/photo-1486006920555-c77dce18193b?q=80&w=800'
+    ],
+    screenshot_url: 'https://images.unsplash.com/photo-1486006920555-c77dce18193b?q=80&w=800',
+    status: 'nouveau'
+  },
+  {
+    id: 'lead-artisan-04',
     title: 'Plomberie Moderne & Dépannage Express',
     category: 'Plombier Sanitaire',
     address: 'Avenue Clozel, Cotonou, Bénin',
     city: 'Cotonou',
+    lat: 6.3650,
+    lng: 2.4310,
     phone: '+229 95 44 88 12',
     website: 'http://plomberie-cotonou-old.fr.st',
     rating: 4.7,
@@ -67,11 +121,13 @@ const initialSeedLeads = [
     status: 'nouveau'
   },
   {
-    id: 'lead-artisan-03',
+    id: 'lead-artisan-05',
     title: 'Saveurs & Délices d\'Afrique',
     category: 'Restaurant & Traiteur Événementiel',
     address: 'Boulevard de la Marina, Cotonou, Bénin',
     city: 'Cotonou',
+    lat: 6.3530,
+    lng: 2.3990,
     phone: '+229 96 11 22 33',
     website: '',
     rating: 4.8,
@@ -94,6 +150,42 @@ const initialSeedLeads = [
       customDomain: '',
       status: 'deployed'
     },
+    status: 'nouveau'
+  },
+  {
+    id: 'lead-artisan-06',
+    title: 'Couture & Stylisme Africain Élégance',
+    category: 'Maison de Couture & Création Textile',
+    address: 'Quartier Cadjehoun, Cotonou, Bénin',
+    city: 'Cotonou',
+    lat: 6.3620,
+    lng: 2.4080,
+    phone: '+229 97 12 34 56',
+    website: '',
+    rating: 4.9,
+    reviewsCount: 65,
+    photos: [
+      'https://images.unsplash.com/photo-1558769132-cb1aea458c5e?q=80&w=800'
+    ],
+    screenshot_url: 'https://images.unsplash.com/photo-1558769132-cb1aea458c5e?q=80&w=800',
+    status: 'nouveau'
+  },
+  {
+    id: 'lead-artisan-07',
+    title: 'Ferronnerie & Métallerie d\'Art Ouando',
+    category: 'Artisan Ferronnier & Soudeur',
+    address: 'Marché Ouando, Porto-Novo, Bénin',
+    city: 'Porto-Novo',
+    lat: 6.5020,
+    lng: 2.6150,
+    phone: '+229 94 33 22 11',
+    website: '',
+    rating: 4.8,
+    reviewsCount: 28,
+    photos: [
+      'https://images.unsplash.com/photo-1504917599217-d4dc5ebe6122?q=80&w=800'
+    ],
+    screenshot_url: 'https://images.unsplash.com/photo-1504917599217-d4dc5ebe6122?q=80&w=800',
     status: 'nouveau'
   }
 ];
@@ -121,10 +213,14 @@ export const DataStore = {
   async getLeads(): Promise<any[]> {
     if (isMongoReady()) {
       try {
-        const leads = await LeadModel.find().lean();
-        if (leads.length > 0) return leads;
-        // seed if empty
-        await LeadModel.insertMany(initialSeedLeads);
+        // Ensure seed leads exist and have lat/lng coordinates
+        for (const seed of initialSeedLeads) {
+          await LeadModel.updateOne(
+            { id: seed.id },
+            { $set: { lat: seed.lat, lng: seed.lng, address: seed.address, city: seed.city } },
+            { upsert: true }
+          );
+        }
         return await LeadModel.find().lean();
       } catch (err) {
         console.error('Mongo getLeads error, using memory:', err);

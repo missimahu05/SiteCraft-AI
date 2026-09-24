@@ -17,7 +17,8 @@ export class CloudflareService {
     const settings = await DataStore.getSettings();
     return {
       apiToken: settings.CLOUDFLARE_API_TOKEN || process.env.CLOUDFLARE_API_TOKEN || '',
-      accountId: settings.CLOUDFLARE_ACCOUNT_ID || process.env.CLOUDFLARE_ACCOUNT_ID || ''
+      accountId: settings.CLOUDFLARE_ACCOUNT_ID || process.env.CLOUDFLARE_ACCOUNT_ID || '',
+      email: process.env.CLOUDFLARE_EMAIL || 'jolidonhoungue30@gmail.com'
     };
   }
 
@@ -63,7 +64,9 @@ export class CloudflareService {
           },
           {
             headers: {
-              'Authorization': `Bearer ${config.apiToken}`,
+              ...(config.apiToken.startsWith('cfk_')
+                ? { 'X-Auth-Key': config.apiToken, 'X-Auth-Email': config.email }
+                : { 'Authorization': `Bearer ${config.apiToken}` }),
               'Content-Type': 'application/json'
             }
           }

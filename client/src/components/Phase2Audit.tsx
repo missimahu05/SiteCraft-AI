@@ -1,7 +1,22 @@
 import { useState, useEffect } from 'react';
 import type { BusinessProfile } from '../types';
 import { api } from '../api/client';
-import { Eye, ShieldAlert, Sparkles, CheckCircle2, ArrowRight, RefreshCw, AlertTriangle } from 'lucide-react';
+import { MotionReveal } from './motion/MotionReveal';
+import {
+  Eye,
+  ShieldAlert,
+  Sparkles,
+  CheckCircle2,
+  ArrowRight,
+  RefreshCw,
+  AlertTriangle,
+  Lock,
+  Smartphone,
+  Monitor,
+  Flame,
+  Zap,
+  Target
+} from 'lucide-react';
 
 interface Phase2Props {
   selectedLead: BusinessProfile;
@@ -16,17 +31,18 @@ export const Phase2Audit = ({
   leads,
   onSelectLead,
   onUpdateLeadAudit,
-  onNavigateToGenerator
+  onNavigateToGenerator,
 }: Phase2Props) => {
   const [isAuditing, setIsAuditing] = useState(false);
   const [activeLead, setActiveLead] = useState<BusinessProfile>(selectedLead);
+  const [viewportMode, setViewportMode] = useState<'desktop' | 'mobile'>('desktop');
 
   useEffect(() => {
     setActiveLead(selectedLead);
   }, [selectedLead]);
 
   const handleLeadChange = (leadId: string) => {
-    const found = leads.find(l => l.id === leadId);
+    const found = leads.find((l) => l.id === leadId);
     if (found) {
       setActiveLead(found);
       onSelectLead(found);
@@ -38,10 +54,10 @@ export const Phase2Audit = ({
     try {
       const newAudit = await api.runAudit(activeLead.id);
       onUpdateLeadAudit(activeLead.id, newAudit);
-      setActiveLead(prev => ({
+      setActiveLead((prev) => ({
         ...prev,
         audit: newAudit,
-        status: 'qualifie'
+        status: 'qualifie',
       }));
     } catch (err) {
       console.error('Audit failed:', err);
@@ -51,290 +67,348 @@ export const Phase2Audit = ({
   };
 
   const audit = activeLead.audit;
-  const isEligibleForRedesign = audit ? (audit.score_global < 6.5 || audit.eligible_refonte) : false;
+  const isEligibleForRedesign = audit ? audit.score_global < 6.5 || audit.eligible_refonte : false;
 
   return (
-    <div className="space-y-8">
-      {/* Banner */}
-      <div className="p-8 sm:p-10 rounded-3xl bg-white border border-[#E0E3EF] shadow-card relative overflow-hidden flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6">
-        <div className="space-y-2 relative z-10">
-          <p className="section-label">
-            PHASE 02 • MULTIMODAL VISION LLM SCORING
-          </p>
+    <div className="space-y-6">
+      {/* Top Banner */}
+      <MotionReveal direction="up" delay={0.05}>
+        <div className="glass-card p-6 sm:p-8 relative overflow-hidden border border-white/80 shadow-md">
+          <div className="absolute top-0 right-0 w-80 h-80 bg-gradient-to-bl from-purple-500/10 via-rose-500/5 to-transparent rounded-full blur-3xl pointer-events-none" />
 
-          <h2 className="text-2xl sm:text-4xl font-outfit font-black text-[#1A2550] tracking-tight uppercase italic">
-            Audit Vision & <span className="text-[#C41641]">Scoring Algorithmique</span>
-          </h2>
-
-          <p className="text-sm text-[#6B7299] max-w-3xl leading-relaxed">
-            Évaluation automatique du viewport 1440×900 sur 4 critères clés. Règle absolue : si <strong className="text-[#1A2550]">Score &lt; 6.5</strong> ou absence totale de site web, le prospect est qualifié et transmis directement au studio de génération frontend.
-          </p>
-        </div>
-
-        {/* Lead Selector Pill */}
-        <div className="flex items-center gap-3 shrink-0 bg-[#F4F2EE] p-2 rounded-2xl border border-[#E0E3EF]">
-          <label className="text-xs text-[#6B7299] font-outfit font-bold uppercase tracking-wider pl-2">Prospect :</label>
-          <select
-            value={activeLead.id}
-            onChange={(e) => handleLeadChange(e.target.value)}
-            className="px-4 py-2.5 rounded-xl bg-white border border-[#E0E3EF] text-xs font-outfit font-bold text-[#1A2550] focus:outline-none focus:border-[#C41641] cursor-pointer shadow-sm"
-          >
-            {leads.map(l => (
-              <option key={l.id} value={l.id}>{l.title} ({l.website ? 'Avec site' : 'Sans site'})</option>
-            ))}
-          </select>
-        </div>
-      </div>
-
-      {/* Main Grid: Capture / Viewport vs AI Score Breakdown */}
-      <div className="grid lg:grid-cols-12 gap-8">
-        {/* Left: Viewport Simulation (7 cols) */}
-        <div className="lg:col-span-7 space-y-4">
-          <div className="p-6 sm:p-8 rounded-3xl card-peintre space-y-5">
-            {/* Browser Mockup Chrome Bar */}
-            <div className="flex items-center justify-between pb-3 border-b border-[#F0F1F5]">
-              <div className="flex items-center gap-2">
-                <span className="w-3 h-3 rounded-full bg-[#C41641] inline-block" />
-                <span className="w-3 h-3 rounded-full bg-[#FBBF24] inline-block" />
-                <span className="w-3 h-3 rounded-full bg-[#10B981] inline-block" />
-                <span className="ml-3 text-[11px] font-mono text-[#6B7299]">
-                  Viewport 1440×900 px — Headless Playwright
-                </span>
+          <div className="relative z-10 flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6">
+            <div className="space-y-2">
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-orange-50 border border-orange-200 text-[#EA580C] text-xs font-outfit font-extrabold uppercase tracking-widest">
+                <Target className="w-3.5 h-3.5" />
+                <span>Phase 02 • Multimodal Vision LLM Scoring</span>
               </div>
-              <span className="text-xs font-mono text-[#6B7299] truncate max-w-xs">
-                {activeLead.website ? activeLead.website : 'about:blank'}
-              </span>
+
+              <h2 className="text-2xl sm:text-4xl font-outfit font-black text-[#0F172A] tracking-tight uppercase">
+                Audit Vision & <span className="text-[#EA580C]">Scoring Algorithmique</span>
+              </h2>
+
+              <p className="text-sm text-slate-600 max-w-3xl leading-relaxed">
+                Capture de l'état réel et scoring multi-facteurs sur 4 critères décisifs. Règle stricte :
+                si <strong className="text-slate-900 font-bold">Score &lt; 6.5/10</strong> ou absence totale de vitrine,
+                l'établissement est instantanément certifié éligible pour la génération du nouveau site.
+              </p>
             </div>
 
-            {/* Viewport Frame */}
-            <div className="relative aspect-[16/10] bg-[#FAF9F6] rounded-2xl border border-[#E0E3EF] overflow-hidden flex flex-col justify-center items-center text-center p-8 group">
-              {activeLead.website ? (
-                /* Outdated Site Simulation */
-                <div className="w-full h-full p-6 bg-amber-50 border border-dashed border-amber-300 rounded-2xl flex flex-col items-center justify-center space-y-4">
-                  <div className="w-14 h-14 rounded-2xl bg-amber-100 border border-amber-300 flex items-center justify-center text-amber-700 text-2xl font-outfit font-black">
-                    90's
-                  </div>
-                  <div className="space-y-1.5 max-w-md">
-                    <p className="font-outfit font-black text-base text-amber-900 uppercase tracking-tight">Site Web Obsolète & Non-Optimisé</p>
-                    <p className="text-xs text-[#6B7299] leading-relaxed">
-                      Technologies datées, non-optimisé pour smartphones modernes, absence de call-to-action direct et aucun balisage schema.org.
-                    </p>
-                  </div>
-                  <div className="flex flex-wrap justify-center gap-2">
-                    <span className="text-[10px] px-3 py-1 rounded-full bg-white text-[#1A2550] border border-amber-200 font-mono">PagesPerso / Free / Web1.0</span>
-                    <span className="text-[10px] px-3 py-1 rounded-full bg-red-100 text-red-700 font-bold">Temps de chargement &gt; 4.8s</span>
-                  </div>
-                </div>
-              ) : (
-                /* Missing Site */
-                <div className="w-full h-full p-6 bg-[#FDF1F3] border border-dashed border-[#C41641]/30 rounded-2xl flex flex-col items-center justify-center space-y-4">
-                  <div className="w-14 h-14 rounded-2xl bg-[#C41641]/10 border border-[#C41641]/30 flex items-center justify-center text-[#C41641]">
-                    <AlertTriangle className="w-7 h-7" />
-                  </div>
-                  <div className="space-y-1.5 max-w-md">
-                    <h4 className="font-outfit font-black text-[#1A2550] text-lg tracking-tight uppercase">Aucun Site Web Officiel</h4>
-                    <p className="text-xs text-[#6B7299] leading-relaxed">
-                      Ce commerce bénéficie d'une excellente réputation Google ({activeLead.rating}★) mais n'a aucune vitrine en ligne, perdant 40% des clients mobiles.
-                    </p>
-                  </div>
-                  <span className="text-xs px-4 py-1.5 rounded-full bg-[#C41641] text-white font-outfit font-black uppercase tracking-wider shadow-sm">
-                    Opportunité Création Immédiate
-                  </span>
-                </div>
-              )}
-
-              {/* Laser Scanning Animation Overlay */}
-              {isAuditing && (
-                <div className="absolute inset-0 bg-[#1A2550]/90 backdrop-blur-sm flex flex-col items-center justify-center space-y-4 text-white">
-                  <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-[#C41641] to-transparent animate-pulse shadow-[0_0_20px_#C41641]" />
-                  <div className="w-12 h-12 border-3 border-[#C41641] border-t-transparent rounded-full animate-spin" />
-                  <div className="text-center font-outfit text-xs text-white space-y-1">
-                    <p className="font-black tracking-wider uppercase text-sm">Audit Vision Multimodale en cours...</p>
-                    <p className="text-slate-300 text-[11px]">Évaluation Modernité • Lisibilité • CTA • Visuels</p>
-                  </div>
-                </div>
-              )}
-            </div>
-
-            {/* Trigger Scan Button */}
-            <div className="flex items-center justify-between pt-2">
-              <span className="text-xs text-[#6B7299] font-mono">
-                {audit ? `Audit horodaté : ${audit.auditDate}` : 'En attente d\'analyse vision'}
-              </span>
-
-              <button
-                disabled={isAuditing}
-                onClick={runVisionAudit}
-                className="btn-primary text-xs !py-3"
+            {/* Lead Selector Dropdown */}
+            <div className="flex items-center gap-3 shrink-0 bg-slate-100/90 p-2 rounded-2xl border border-slate-200 shadow-sm">
+              <label htmlFor="lead-select" className="text-xs text-slate-600 font-outfit font-bold uppercase tracking-wider pl-2">
+                Prospect :
+              </label>
+              <select
+                id="lead-select"
+                value={activeLead.id}
+                onChange={(e) => handleLeadChange(e.target.value)}
+                className="px-3.5 py-2 rounded-xl bg-white border border-slate-200 text-xs font-outfit font-bold text-[#0F172A] focus:outline-none focus:border-[#EA580C] cursor-pointer shadow-sm"
               >
-                <RefreshCw className={`w-4 h-4 ${isAuditing ? 'animate-spin' : ''}`} />
-                <span>{audit ? 'Re-scanner Vision LLM' : 'Lancer l\'Audit Vision LLM'}</span>
-              </button>
+                {leads.map((l) => (
+                  <option key={l.id} value={l.id}>
+                    {l.title} ({l.website ? 'Avec site' : 'Sans site'})
+                  </option>
+                ))}
+              </select>
             </div>
           </div>
+        </div>
+      </MotionReveal>
+
+      {/* Main Grid: Viewport Simulator vs Scoring Breakdown */}
+      <div className="grid lg:grid-cols-12 gap-6 items-start">
+        {/* Left: Viewport Simulation (7 cols) */}
+        <div className="lg:col-span-7 space-y-4">
+          <MotionReveal direction="up" delay={0.1}>
+            <div className="glass-card p-5 sm:p-7 space-y-4">
+              {/* Browser Window Chrome */}
+              <div className="flex flex-wrap items-center justify-between gap-3 pb-3 border-b border-slate-200">
+                <div className="flex items-center gap-2">
+                  <span className="w-3 h-3 rounded-full bg-rose-400 inline-block" />
+                  <span className="w-3 h-3 rounded-full bg-amber-400 inline-block" />
+                  <span className="w-3 h-3 rounded-full bg-emerald-400 inline-block" />
+                  <span className="ml-2 text-xs font-mono text-slate-500 flex items-center gap-1.5">
+                    <Lock className="w-3 h-3 text-emerald-600" />
+                    <span className="truncate max-w-[200px] sm:max-w-xs">{activeLead.website || 'https://non-existant.local'}</span>
+                  </span>
+                </div>
+
+                {/* Desktop / Mobile toggle */}
+                <div className="flex items-center gap-1 bg-slate-100 p-1 rounded-xl border border-slate-200 text-xs">
+                  <button
+                    onClick={() => setViewportMode('desktop')}
+                    className={`flex items-center gap-1 px-2.5 py-1 rounded-lg font-outfit font-bold transition cursor-pointer ${
+                      viewportMode === 'desktop' ? 'bg-white text-[#0F172A] shadow-sm' : 'text-slate-500'
+                    }`}
+                  >
+                    <Monitor className="w-3.5 h-3.5" />
+                    <span>1440px</span>
+                  </button>
+                  <button
+                    onClick={() => setViewportMode('mobile')}
+                    className={`flex items-center gap-1 px-2.5 py-1 rounded-lg font-outfit font-bold transition cursor-pointer ${
+                      viewportMode === 'mobile' ? 'bg-white text-[#0F172A] shadow-sm' : 'text-slate-500'
+                    }`}
+                  >
+                    <Smartphone className="w-3.5 h-3.5" />
+                    <span>390px</span>
+                  </button>
+                </div>
+              </div>
+
+              {/* Viewport Frame */}
+              <div className="relative aspect-[16/10] bg-slate-900 rounded-2xl border border-slate-200 overflow-hidden flex flex-col justify-center items-center text-center p-6 sm:p-10 group">
+                {activeLead.website ? (
+                  /* Outdated Site Visual Simulation */
+                  <div className="w-full h-full p-6 bg-gradient-to-br from-amber-950/80 to-slate-900 border border-amber-500/30 rounded-xl flex flex-col items-center justify-center space-y-4 text-white">
+                    <div className="w-14 h-14 rounded-2xl bg-amber-500/20 border border-amber-400/30 flex items-center justify-center text-amber-400 text-2xl font-outfit font-black">
+                      90's
+                    </div>
+                    <div className="space-y-1.5 max-w-md">
+                      <p className="font-outfit font-black text-base text-amber-300 uppercase tracking-tight">
+                        Site Web Obsolète & Non-Optimisé
+                      </p>
+                      <p className="text-xs text-slate-300 leading-relaxed font-sans">
+                        Stack dépassée, temps de rendu supérieur à 4.5s sur mobile, aucun bouton d'appel direct,
+                        mise en page non-responsive causant de l'abandon de panier.
+                      </p>
+                    </div>
+                    <div className="flex flex-wrap justify-center gap-2 text-xs">
+                      <span className="px-3 py-1 rounded-full bg-white/10 text-slate-200 border border-white/10 font-mono text-[10px]">
+                        Lighthouse Perf: 28/100
+                      </span>
+                      <span className="px-3 py-1 rounded-full bg-rose-500/20 text-rose-300 border border-rose-500/30 font-bold text-[10px]">
+                        Temps de chargement &gt; 4.8s
+                      </span>
+                    </div>
+                  </div>
+                ) : (
+                  /* Missing Site Case */
+                  <div className="w-full h-full p-6 bg-gradient-to-br from-orange-950/70 to-slate-900 border border-orange-500/30 rounded-xl flex flex-col items-center justify-center space-y-4 text-white">
+                    <div className="w-14 h-14 rounded-2xl bg-orange-500/20 border border-orange-500/40 flex items-center justify-center text-[#EA580C]">
+                      <AlertTriangle className="w-7 h-7" />
+                    </div>
+                    <div className="space-y-1.5 max-w-md">
+                      <h4 className="font-outfit font-black text-white text-lg tracking-tight uppercase">
+                        Aucun Site Web Référencé
+                      </h4>
+                      <p className="text-xs text-slate-300 leading-relaxed font-sans">
+                        Ce commerce jouit d'une forte notoriété locale ({activeLead.rating}★ pour {activeLead.reviewsCount} avis)
+                        mais abandonne 100% du trafic de recherche aux concurrents équipés.
+                      </p>
+                    </div>
+                    <span className="text-xs px-4 py-1.5 rounded-full bg-[#EA580C] text-white font-outfit font-black uppercase tracking-wider shadow-lg shadow-orange-900/50">
+                      Opportunité Création Immédiate (300 000 FCFA)
+                    </span>
+                  </div>
+                )}
+
+                {/* Laser Scanning Animation Overlay */}
+                {isAuditing && (
+                  <div className="absolute inset-0 bg-slate-950/90 backdrop-blur-md flex flex-col items-center justify-center space-y-4 text-white">
+                    <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-[#EA580C] to-transparent animate-pulse shadow-[0_0_20px_#EA580C]" />
+                    <div className="w-12 h-12 border-3 border-[#EA580C] border-t-transparent rounded-full animate-spin" />
+                    <div className="text-center font-outfit text-xs text-white space-y-1">
+                      <p className="font-black tracking-wider uppercase text-sm">Audit Vision Multimodale GPT-4o en cours...</p>
+                      <p className="text-slate-400 text-[11px]">Évaluation Modernité • Lisibilité • CTA • Conversion</p>
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {/* Action Scan Trigger */}
+              <div className="flex flex-wrap items-center justify-between gap-3 pt-2">
+                <span className="text-xs text-slate-500 font-mono">
+                  {audit ? `Dernier audit : ${audit.auditDate}` : 'En attente d\'analyse vision'}
+                </span>
+
+                <button
+                  disabled={isAuditing}
+                  onClick={runVisionAudit}
+                  className="btn-primary text-xs !py-2.5 !px-4"
+                  aria-label="Lancer l'audit vision multimodale"
+                >
+                  <RefreshCw className={`w-3.5 h-3.5 ${isAuditing ? 'animate-spin' : ''}`} />
+                  <span>{audit ? 'Re-scanner Vision LLM' : 'Lancer l\'Audit Vision LLM'}</span>
+                </button>
+              </div>
+            </div>
+          </MotionReveal>
         </div>
 
         {/* Right: AI Score Breakdown (5 cols) */}
         <div className="lg:col-span-5 space-y-4">
-          <div className="p-6 sm:p-8 rounded-3xl card-peintre space-y-6 h-full flex flex-col justify-between">
-            {audit ? (
-              <div className="space-y-6">
-                {/* Global Score Gauge Card */}
-                <div className="p-6 rounded-2xl bg-[#F4F2EE] border border-[#E0E3EF] flex items-center justify-between">
-                  <div className="space-y-1">
-                    <span className="text-[10px] font-outfit uppercase text-[#6B7299] font-bold tracking-widest">Score Global Vision</span>
-                    <div className="flex items-baseline gap-2">
-                      <span className={`text-5xl font-outfit font-black tracking-tight ${
-                        audit.score_global < 6.5 ? 'text-[#C41641]' : 'text-emerald-600'
-                      }`}>
-                        {audit.score_global.toFixed(1)}
+          <MotionReveal direction="up" delay={0.15}>
+            <div className="glass-card p-5 sm:p-7 space-y-6">
+              {audit ? (
+                <div className="space-y-6">
+                  {/* Global Score Gauge */}
+                  <div className="p-5 rounded-2xl bg-slate-100/90 border border-slate-200 flex items-center justify-between">
+                    <div className="space-y-1">
+                      <span className="text-[10px] font-outfit uppercase text-slate-500 font-bold tracking-widest">
+                        Score Global Vision
                       </span>
-                      <span className="text-[#6B7299] text-sm font-bold">/ 10</span>
+                      <div className="flex items-baseline gap-2">
+                        <span
+                          className={`text-5xl font-outfit font-black tracking-tight ${
+                            audit.score_global < 6.5 ? 'text-[#EA580C]' : 'text-emerald-600'
+                          }`}
+                        >
+                          {audit.score_global.toFixed(1)}
+                        </span>
+                        <span className="text-slate-500 text-sm font-bold">/ 10</span>
+                      </div>
+                    </div>
+
+                    <div className="text-right space-y-1">
+                      {isEligibleForRedesign ? (
+                        <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-black bg-[#FFF7ED] border border-[#FED7AA] text-[#EA580C] uppercase tracking-wider font-outfit">
+                          <ShieldAlert className="w-3.5 h-3.5 text-[#EA580C]" /> Éligible Refonte
+                        </span>
+                      ) : (
+                        <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-black bg-emerald-50 border border-emerald-200 text-emerald-700 uppercase tracking-wider font-outfit">
+                          <CheckCircle2 className="w-3.5 h-3.5" /> Site Conforme
+                        </span>
+                      )}
+                      <p className="text-[10px] font-mono text-slate-500">Seuil de qualification : &lt; 6.5 / 10</p>
                     </div>
                   </div>
 
-                  <div className="text-right space-y-1">
-                    {isEligibleForRedesign ? (
-                      <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-black bg-[#FDF1F3] border border-[#C41641]/30 text-[#C41641] uppercase tracking-wider font-outfit">
-                        <ShieldAlert className="w-3.5 h-3.5 text-[#C41641]" /> Éligible Refonte
-                      </span>
-                    ) : (
-                      <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-black bg-emerald-50 border border-emerald-200 text-emerald-700 uppercase tracking-wider font-outfit">
-                        <CheckCircle2 className="w-3.5 h-3.5" /> Site Conforme
-                      </span>
-                    )}
-                    <p className="text-[10px] font-mono text-[#6B7299]">Seuil de refonte : &lt; 6.5 / 10</p>
+                  {/* 4 Key Criteria Bars */}
+                  {(() => {
+                    const criteres = audit.criteres || {
+                      modernite: Math.round((audit.mobile || 35) / 10),
+                      lisibilite: Math.round((audit.seo || 40) / 10),
+                      cta: Math.round((audit.performance || 45) / 10),
+                      visuels: 4,
+                    };
+                    const defauts = audit.defauts_majeurs || audit.points_faibles || [
+                      'Absence de site moderne responsive pour smartphones',
+                      'Aucun bouton d\'appel direct en 1 clic visible',
+                      'Perte massive de clients locaux cherchant sur Google',
+                    ];
+
+                    return (
+                      <>
+                        <div className="space-y-3.5 text-xs">
+                          <h4 className="font-outfit font-black text-[#0F172A] uppercase tracking-wider text-xs">
+                            Décomposition des 4 Piliers
+                          </h4>
+
+                          <div className="space-y-1">
+                            <div className="flex justify-between text-slate-700 font-semibold">
+                              <span>1. Modernité Visuelle & Design System</span>
+                              <span className="font-mono font-bold text-[#EA580C]">{criteres.modernite} / 10</span>
+                            </div>
+                            <div className="w-full h-2 rounded-full bg-slate-200 overflow-hidden">
+                              <div
+                                className="h-full bg-[#EA580C] rounded-full transition-all duration-700"
+                                style={{ width: `${criteres.modernite * 10}%` }}
+                              />
+                            </div>
+                          </div>
+
+                          <div className="space-y-1">
+                            <div className="flex justify-between text-slate-700 font-semibold">
+                              <span>2. Lisibilité & Fluidité Mobile</span>
+                              <span className="font-mono font-bold text-[#EA580C]">{criteres.lisibilite} / 10</span>
+                            </div>
+                            <div className="w-full h-2 rounded-full bg-slate-200 overflow-hidden">
+                              <div
+                                className="h-full bg-[#EA580C] rounded-full transition-all duration-700"
+                                style={{ width: `${criteres.lisibilite * 10}%` }}
+                              />
+                            </div>
+                          </div>
+
+                          <div className="space-y-1">
+                            <div className="flex justify-between text-slate-700 font-semibold">
+                              <span>3. Clarté CTA & Conversion Directe</span>
+                              <span className="font-mono font-bold text-[#C2410C]">{criteres.cta} / 10</span>
+                            </div>
+                            <div className="w-full h-2 rounded-full bg-slate-200 overflow-hidden">
+                              <div
+                                className="h-full bg-[#C2410C] rounded-full transition-all duration-700"
+                                style={{ width: `${criteres.cta * 10}%` }}
+                              />
+                            </div>
+                          </div>
+
+                          <div className="space-y-1">
+                            <div className="flex justify-between text-slate-700 font-semibold">
+                              <span>4. Avis Certifiés & Réputation Google</span>
+                              <span className="font-mono font-bold text-[#0F172A]">{criteres.visuels} / 10</span>
+                            </div>
+                            <div className="w-full h-2 rounded-full bg-slate-200 overflow-hidden">
+                              <div
+                                className="h-full bg-[#0F172A] rounded-full transition-all duration-700"
+                                style={{ width: `${criteres.visuels * 10}%` }}
+                              />
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Defauts list */}
+                        <div className="space-y-2 pt-2">
+                          <h4 className="font-outfit font-black text-[#0F172A] uppercase tracking-wider text-xs flex items-center gap-1.5">
+                            <Flame className="w-3.5 h-3.5 text-[#EA580C]" />
+                            <span>Défauts Majeurs Constatés</span>
+                          </h4>
+                          <div className="space-y-1.5">
+                            {defauts.map((defaut: string, idx: number) => (
+                              <div
+                                key={idx}
+                                className="flex items-start gap-2 text-xs text-slate-700 p-2.5 rounded-xl bg-[#FFF7ED] border border-[#FED7AA]"
+                              >
+                                <span className="text-[#EA580C] font-black shrink-0">•</span>
+                                <span className="leading-snug">{defaut}</span>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      </>
+                    );
+                  })()}
+
+                  {/* Forward button to Generator */}
+                  <div className="pt-4 border-t border-slate-200">
+                    <button
+                      onClick={() => onNavigateToGenerator(activeLead)}
+                      className="btn-primary w-full !py-3.5 text-sm"
+                      aria-label="Transmettre au Studio Frontend"
+                    >
+                      <Sparkles className="w-4 h-4" />
+                      <span>Transmettre au Studio Frontend</span>
+                      <ArrowRight className="w-4 h-4" />
+                    </button>
                   </div>
                 </div>
-
-                {/* 4 Key Criteria Bars */}
-                {(() => {
-                  const criteres = audit.criteres || {
-                    modernite: Math.round((audit.mobile || 35) / 10),
-                    lisibilite: Math.round((audit.seo || 40) / 10),
-                    cta: Math.round((audit.performance || 45) / 10),
-                    visuels: 4
-                  };
-                  const defauts = audit.defauts_majeurs || audit.points_faibles || [
-                    "Absence de site moderne responsive",
-                    "Aucun formulaire de devis en ligne direct",
-                    "Perte de prospects qualifiés sur mobile"
-                  ];
-
-                  return (
-                    <>
-                      <div className="space-y-4 text-xs">
-                        <h4 className="font-outfit font-black text-[#1A2550] uppercase tracking-wider text-xs">
-                          Décomposition des 4 Critères
-                        </h4>
-
-                        <div className="space-y-1.5">
-                          <div className="flex justify-between text-[#2D3553] font-medium">
-                            <span>1. Modernité Visuelle (Typo, Palette, UI)</span>
-                            <span className="font-mono font-bold text-[#C41641]">{criteres.modernite} / 10</span>
-                          </div>
-                          <div className="w-full h-2.5 rounded-full bg-[#F4F2EE] border border-[#E0E3EF] overflow-hidden">
-                            <div 
-                              className="h-full bg-[#C41641] rounded-full transition-all duration-1000" 
-                              style={{ width: `${criteres.modernite * 10}%` }} 
-                            />
-                          </div>
-                        </div>
-
-                        <div className="space-y-1.5">
-                          <div className="flex justify-between text-[#2D3553] font-medium">
-                            <span>2. Lisibilité Mobile (Hiérarchie & Contraste)</span>
-                            <span className="font-mono font-bold text-[#C41641]">{criteres.lisibilite} / 10</span>
-                          </div>
-                          <div className="w-full h-2.5 rounded-full bg-[#F4F2EE] border border-[#E0E3EF] overflow-hidden">
-                            <div 
-                              className="h-full bg-[#C41641] rounded-full transition-all duration-1000" 
-                              style={{ width: `${criteres.lisibilite * 10}%` }} 
-                            />
-                          </div>
-                        </div>
-
-                        <div className="space-y-1.5">
-                          <div className="flex justify-between text-[#2D3553] font-medium">
-                            <span>3. Clarté CTA (Bouton d'appel en 1 clic)</span>
-                            <span className="font-mono font-bold text-[#A01235]">{criteres.cta} / 10</span>
-                          </div>
-                          <div className="w-full h-2.5 rounded-full bg-[#F4F2EE] border border-[#E0E3EF] overflow-hidden">
-                            <div 
-                              className="h-full bg-[#A01235] rounded-full transition-all duration-1000" 
-                              style={{ width: `${criteres.cta * 10}%` }} 
-                            />
-                          </div>
-                        </div>
-
-                        <div className="space-y-1.5">
-                          <div className="flex justify-between text-[#2D3553] font-medium">
-                            <span>4. Avis certifiés & Preuve Google</span>
-                            <span className="font-mono font-bold text-[#1A2550]">{criteres.visuels} / 10</span>
-                          </div>
-                          <div className="w-full h-2.5 rounded-full bg-[#F4F2EE] border border-[#E0E3EF] overflow-hidden">
-                            <div 
-                              className="h-full bg-[#1A2550] rounded-full transition-all duration-1000" 
-                              style={{ width: `${criteres.visuels * 10}%` }} 
-                            />
-                          </div>
-                        </div>
-                      </div>
-
-                      {/* Major Flaws */}
-                      <div className="space-y-2.5">
-                        <h4 className="font-outfit font-black text-[#1A2550] uppercase tracking-wider text-xs">
-                          Défauts Majeurs Détectés
-                        </h4>
-                        <div className="space-y-2">
-                          {defauts.map((defaut: string, idx: number) => (
-                            <div key={idx} className="flex items-start gap-2.5 text-xs text-[#2D3553] p-3 rounded-xl bg-[#FDF1F3] border border-[#C41641]/15">
-                              <span className="text-[#C41641] font-black">•</span>
-                              <span className="leading-relaxed">{defaut}</span>
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-                    </>
-                  );
-                })()}
-              </div>
-            ) : (
-              <div className="py-16 text-center space-y-4">
-                <div className="w-16 h-16 rounded-3xl bg-[#F4F2EE] border border-[#E0E3EF] flex items-center justify-center mx-auto text-[#C41641] shadow-sm">
-                  <Eye className="w-8 h-8" />
+              ) : (
+                <div className="py-12 text-center space-y-4">
+                  <div className="w-14 h-14 rounded-2xl bg-purple-50 text-purple-600 flex items-center justify-center mx-auto">
+                    <Eye className="w-7 h-7" />
+                  </div>
+                  <div className="space-y-1">
+                    <h4 className="text-base font-outfit font-black text-[#0F172A] uppercase">
+                      Aucun audit calculé
+                    </h4>
+                    <p className="text-xs text-slate-500 max-w-xs mx-auto">
+                      Cliquez sur le bouton ci-dessous pour déclencher l'analyse visuelle multimodale par GPT-4o.
+                    </p>
+                  </div>
+                  <button onClick={runVisionAudit} className="btn-primary mx-auto text-xs !py-2.5 !px-5">
+                    <Zap className="w-3.5 h-3.5" />
+                    <span>Démarrer l'analyse maintenant</span>
+                  </button>
                 </div>
-                <div className="space-y-1">
-                  <h4 className="text-base font-outfit font-black text-[#1A2550] uppercase">Aucun audit calculé</h4>
-                  <p className="text-xs text-[#6B7299] max-w-xs mx-auto">
-                    Cliquez sur « Lancer l'Audit Vision LLM » pour analyser automatiquement le viewport et obtenir les scores.
-                  </p>
-                </div>
-                <button
-                  onClick={runVisionAudit}
-                  className="btn-primary mx-auto"
-                >
-                  Démarrer l'analyse maintenant
-                </button>
-              </div>
-            )}
-
-            {/* Action Forward */}
-            {audit && (
-              <div className="pt-5 border-t border-[#F0F1F5]">
-                <button
-                  onClick={() => onNavigateToGenerator(activeLead)}
-                  className="btn-primary w-full !py-4 text-sm"
-                >
-                  <Sparkles className="w-4 h-4" />
-                  <span>Transmettre au Studio Frontend</span>
-                  <ArrowRight className="w-4 h-4" />
-                </button>
-              </div>
-            )}
-          </div>
+              )}
+            </div>
+          </MotionReveal>
         </div>
       </div>
     </div>
   );
 };
+
+export default Phase2Audit;

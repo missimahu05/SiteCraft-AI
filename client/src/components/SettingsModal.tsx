@@ -52,24 +52,24 @@ export const SettingsModal = ({ isOpen, onClose }: SettingsModalProps) => {
   };
 
   return (
-    <div className="fixed inset-0 z-50 bg-[#0F163A]/80 backdrop-blur-md flex items-center justify-center p-4 overflow-y-auto">
-      <div className="bg-white border border-[#E0E3EF] rounded-3xl max-w-2xl w-full p-8 space-y-6 shadow-2xl relative my-8">
+    <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-md flex items-center justify-center p-4 overflow-y-auto">
+      <div className="bg-white border border-slate-200 rounded-3xl max-w-2xl w-full p-8 space-y-6 shadow-2xl relative my-8">
         {/* Header */}
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-[#FDF1F3] border border-[#C41641]/20 flex items-center justify-center">
-              <Key className="w-5 h-5 text-[#C41641]" />
+            <div className="w-10 h-10 rounded-xl bg-[#FFF7ED] border border-[#FED7AA] flex items-center justify-center">
+              <Key className="w-5 h-5 text-[#EA580C]" />
             </div>
             <div>
-              <h3 className="text-lg font-outfit font-black tracking-tight text-[#1A2550] uppercase">
-                Configuration <span className="text-[#C41641]">APIs & Infrastructure</span>
+              <h3 className="text-lg font-outfit font-black tracking-tight text-[#0F172A] uppercase">
+                Configuration <span className="text-[#EA580C]">APIs & Infrastructure</span>
               </h3>
-              <p className="text-[11px] text-[#6B7299] font-mono">Stockage sécurisé • Déploiement Cloudflare • Paiements FeexPay</p>
+              <p className="text-[11px] text-slate-500 font-mono">Stockage sécurisé • Déploiement Cloudflare • Passerelle FeexPay</p>
             </div>
           </div>
           <button 
             onClick={onClose} 
-            className="w-8 h-8 rounded-full bg-[#F4F2EE] hover:bg-[#E8EAF2] text-[#1A2550] flex items-center justify-center cursor-pointer transition font-bold"
+            className="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-[#0F172A] flex items-center justify-center cursor-pointer transition font-bold"
           >
             <X className="w-4 h-4" />
           </button>
@@ -77,38 +77,38 @@ export const SettingsModal = ({ isOpen, onClose }: SettingsModalProps) => {
 
         {/* Live System Status Bar */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-          <div className="p-3 rounded-2xl bg-[#F4F2EE] border border-[#E0E3EF] flex items-center gap-2.5">
+          <div className="p-3 rounded-2xl bg-slate-50 border border-slate-200 flex items-center gap-2.5">
             <Database className="w-4 h-4 text-emerald-600 shrink-0" />
             <div className="text-[11px] leading-tight">
-              <div className="font-bold text-[#1A2550]">MongoDB</div>
+              <div className="font-bold text-[#0F172A]">MongoDB</div>
               <div className="text-emerald-700 font-mono text-[10px]">
                 {dbStatus.connected ? 'Atlas Connecté' : 'Mode Fallback Actif'}
               </div>
             </div>
           </div>
 
-          <div className="p-3 rounded-2xl bg-[#F4F2EE] border border-[#E0E3EF] flex items-center gap-2.5">
-            <Cloud className="w-4 h-4 text-orange-500 shrink-0" />
+          <div className="p-3 rounded-2xl bg-slate-50 border border-slate-200 flex items-center gap-2.5">
+            <Cloud className="w-4 h-4 text-[#EA580C] shrink-0" />
             <div className="text-[11px] leading-tight">
-              <div className="font-bold text-[#1A2550]">Cloudflare Pages</div>
-              <div className="text-[#6B7299] font-mono text-[10px]">Anycast Edge (330+ Villes)</div>
+              <div className="font-bold text-[#0F172A]">Cloudflare Pages</div>
+              <div className="text-slate-500 font-mono text-[10px]">Anycast Edge (330+ Villes)</div>
             </div>
           </div>
 
-          <div className="p-3 rounded-2xl bg-[#F4F2EE] border border-[#E0E3EF] flex items-center gap-2.5">
-            <CreditCard className="w-4 h-4 text-[#C41641] shrink-0" />
+          <div className="p-3 rounded-2xl bg-slate-50 border border-slate-200 flex items-center gap-2.5">
+            <CreditCard className="w-4 h-4 text-[#EA580C] shrink-0" />
             <div className="text-[11px] leading-tight">
-              <div className="font-bold text-[#1A2550]">FeexPay</div>
-              <div className="text-[#C41641] font-mono text-[10px]">MTN • Moov • Wave • CB</div>
+              <div className="font-bold text-[#0F172A]">FeexPay</div>
+              <div className="text-[#EA580C] font-mono text-[10px]">MTN • Moov • Wave • CB</div>
             </div>
           </div>
         </div>
 
         <form onSubmit={handleSave} className="space-y-5 text-xs">
           {/* MONGODB */}
-          <div className="space-y-1.5 p-4 rounded-2xl bg-[#FAF9F6] border border-[#E0E3EF]">
+          <div className="space-y-1.5 p-4 rounded-2xl bg-slate-50 border border-slate-200">
             <div className="flex items-center justify-between">
-              <label className="text-[#1A2550] font-outfit font-bold uppercase tracking-wider text-[11px] flex items-center gap-2">
+              <label className="text-[#0F172A] font-outfit font-bold uppercase tracking-wider text-[11px] flex items-center gap-2">
                 <Database className="w-3.5 h-3.5 text-emerald-600" />
                 MongoDB Connection URI (Atlas ou Local)
               </label>
@@ -119,87 +119,87 @@ export const SettingsModal = ({ isOpen, onClose }: SettingsModalProps) => {
               placeholder="mongodb+srv://<user>:<password>@cluster0.mongodb.net/sitecraft"
               value={settings.MONGODB_URI || ''}
               onChange={e => setSettings({ ...settings, MONGODB_URI: e.target.value })}
-              className="w-full px-3.5 py-2.5 rounded-xl bg-white border border-[#E0E3EF] text-[#1A2550] font-mono text-xs focus:outline-none focus:border-[#C41641] transition"
+              className="w-full px-3.5 py-2.5 rounded-xl bg-white border border-slate-200 text-[#0F172A] font-mono text-xs focus:outline-none focus:border-[#EA580C] transition"
             />
-            <span className="text-[10px] text-[#6B7299] block">
+            <span className="text-[10px] text-slate-500 block">
               Stocke durablement tous les leads, audits, sites générés et transactions FeexPay.
             </span>
           </div>
 
           {/* CLOUDFLARE */}
-          <div className="space-y-3 p-4 rounded-2xl bg-[#FAF9F6] border border-[#E0E3EF]">
+          <div className="space-y-3 p-4 rounded-2xl bg-slate-50 border border-slate-200">
             <div className="flex items-center justify-between">
-              <label className="text-[#1A2550] font-outfit font-bold uppercase tracking-wider text-[11px] flex items-center gap-2">
-                <Cloud className="w-3.5 h-3.5 text-orange-500" />
+              <label className="text-[#0F172A] font-outfit font-bold uppercase tracking-wider text-[11px] flex items-center gap-2">
+                <Cloud className="w-3.5 h-3.5 text-[#EA580C]" />
                 Cloudflare Pages API (Déploiements & Domaines)
               </label>
-              <span className="text-[10px] text-orange-600 font-mono font-bold">Remplacement Vercel</span>
+              <span className="text-[10px] text-[#EA580C] font-mono font-bold">Remplacement Vercel</span>
             </div>
             
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div className="space-y-1">
-                <span className="text-[10px] text-[#1A2550] font-semibold">Cloudflare API Token</span>
+                <span className="text-[10px] text-[#0F172A] font-semibold">Cloudflare API Token</span>
                 <input
                   type="password"
                   placeholder="Token avec droit Pages:Edit..."
                   value={settings.CLOUDFLARE_API_TOKEN || ''}
                   onChange={e => setSettings({ ...settings, CLOUDFLARE_API_TOKEN: e.target.value })}
-                  className="w-full px-3.5 py-2 rounded-xl bg-white border border-[#E0E3EF] text-[#1A2550] font-mono text-xs focus:outline-none focus:border-[#C41641] transition"
+                  className="w-full px-3.5 py-2 rounded-xl bg-white border border-slate-200 text-[#0F172A] font-mono text-xs focus:outline-none focus:border-[#EA580C] transition"
                 />
               </div>
 
               <div className="space-y-1">
-                <span className="text-[10px] text-[#1A2550] font-semibold">Cloudflare Account ID</span>
+                <span className="text-[10px] text-[#0F172A] font-semibold">Cloudflare Account ID</span>
                 <input
                   type="text"
                   placeholder="Account ID (tableau de bord CF)..."
                   value={settings.CLOUDFLARE_ACCOUNT_ID || ''}
                   onChange={e => setSettings({ ...settings, CLOUDFLARE_ACCOUNT_ID: e.target.value })}
-                  className="w-full px-3.5 py-2 rounded-xl bg-white border border-[#E0E3EF] text-[#1A2550] font-mono text-xs focus:outline-none focus:border-[#C41641] transition"
+                  className="w-full px-3.5 py-2 rounded-xl bg-white border border-slate-200 text-[#0F172A] font-mono text-xs focus:outline-none focus:border-[#EA580C] transition"
                 />
               </div>
             </div>
           </div>
 
           {/* FEEXPAY */}
-          <div className="space-y-3 p-4 rounded-2xl bg-[#FAF9F6] border border-[#E0E3EF]">
+          <div className="space-y-3 p-4 rounded-2xl bg-slate-50 border border-slate-200">
             <div className="flex items-center justify-between">
-              <label className="text-[#1A2550] font-outfit font-bold uppercase tracking-wider text-[11px] flex items-center gap-2">
-                <CreditCard className="w-3.5 h-3.5 text-[#C41641]" />
-                FeexPay Gateway (Paiements Afrique & Mobile Money)
+              <label className="text-[#0F172A] font-outfit font-bold uppercase tracking-wider text-[11px] flex items-center gap-2">
+                <CreditCard className="w-3.5 h-3.5 text-[#EA580C]" />
+                Passerelle FeexPay (Paiements Afrique & Mobile Money)
               </label>
-              <span className="text-[10px] text-[#C41641] font-mono font-bold">MTN / Moov / Orange / Wave</span>
+              <span className="text-[10px] text-[#EA580C] font-mono font-bold">MTN / Moov / Orange / Wave</span>
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
               <div className="space-y-1">
-                <span className="text-[10px] text-[#1A2550] font-semibold">FeexPay API Key</span>
+                <span className="text-[10px] text-[#0F172A] font-semibold">FeexPay API Key</span>
                 <input
                   type="password"
                   placeholder="fp_live_... ou fp_test_..."
                   value={settings.FEEXPAY_API_KEY || ''}
                   onChange={e => setSettings({ ...settings, FEEXPAY_API_KEY: e.target.value })}
-                  className="w-full px-3.5 py-2 rounded-xl bg-white border border-[#E0E3EF] text-[#1A2550] font-mono text-xs focus:outline-none focus:border-[#C41641] transition"
+                  className="w-full px-3.5 py-2 rounded-xl bg-white border border-slate-200 text-[#0F172A] font-mono text-xs focus:outline-none focus:border-[#EA580C] transition"
                 />
               </div>
 
               <div className="space-y-1">
-                <span className="text-[10px] text-[#1A2550] font-semibold">Shop ID FeexPay</span>
+                <span className="text-[10px] text-[#0F172A] font-semibold">Shop ID FeexPay</span>
                 <input
                   type="text"
                   placeholder="ID de votre boutique..."
                   value={settings.FEEXPAY_SHOP_ID || ''}
                   onChange={e => setSettings({ ...settings, FEEXPAY_SHOP_ID: e.target.value })}
-                  className="w-full px-3.5 py-2 rounded-xl bg-white border border-[#E0E3EF] text-[#1A2550] font-mono text-xs focus:outline-none focus:border-[#C41641] transition"
+                  className="w-full px-3.5 py-2 rounded-xl bg-white border border-slate-200 text-[#0F172A] font-mono text-xs focus:outline-none focus:border-[#EA580C] transition"
                 />
               </div>
 
               <div className="space-y-1">
-                <span className="text-[10px] text-[#1A2550] font-semibold">Mode d'exécution</span>
+                <span className="text-[10px] text-[#0F172A] font-semibold">Mode d'exécution</span>
                 <select
                   value={settings.FEEXPAY_MODE || 'TEST'}
                   onChange={e => setSettings({ ...settings, FEEXPAY_MODE: e.target.value })}
-                  className="w-full px-3 py-2 rounded-xl bg-white border border-[#E0E3EF] text-[#1A2550] font-mono text-xs focus:outline-none focus:border-[#C41641] transition cursor-pointer"
+                  className="w-full px-3 py-2 rounded-xl bg-white border border-slate-200 text-[#0F172A] font-mono text-xs focus:outline-none focus:border-[#EA580C] transition cursor-pointer"
                 >
                   <option value="TEST">TEST (Simulation)</option>
                   <option value="LIVE">LIVE (Paiements Réels)</option>
@@ -209,31 +209,31 @@ export const SettingsModal = ({ isOpen, onClose }: SettingsModalProps) => {
           </div>
 
           {/* AI VISION (OpenAI / Gemini) */}
-          <div className="space-y-3 p-4 rounded-2xl bg-[#FAF9F6] border border-[#E0E3EF]">
-            <label className="text-[#1A2550] font-outfit font-bold uppercase tracking-wider text-[11px] flex items-center gap-2">
+          <div className="space-y-3 p-4 rounded-2xl bg-slate-50 border border-slate-200">
+            <label className="text-[#0F172A] font-outfit font-bold uppercase tracking-wider text-[11px] flex items-center gap-2">
               <Sparkles className="w-3.5 h-3.5 text-amber-500" />
               IA Multimodale (Vision LLM & Génération de Contenu)
             </label>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div className="space-y-1">
-                <span className="text-[10px] text-[#1A2550] font-semibold">OpenAI API Key (GPT-4o)</span>
+                <span className="text-[10px] text-[#0F172A] font-semibold">OpenAI API Key (GPT-4o)</span>
                 <input
                   type="password"
                   placeholder="sk-..."
                   value={settings.OPENAI_API_KEY || ''}
                   onChange={e => setSettings({ ...settings, OPENAI_API_KEY: e.target.value })}
-                  className="w-full px-3.5 py-2 rounded-xl bg-white border border-[#E0E3EF] text-[#1A2550] font-mono text-xs focus:outline-none focus:border-[#C41641] transition"
+                  className="w-full px-3.5 py-2 rounded-xl bg-white border border-slate-200 text-[#0F172A] font-mono text-xs focus:outline-none focus:border-[#EA580C] transition"
                 />
               </div>
 
               <div className="space-y-1">
-                <span className="text-[10px] text-[#1A2550] font-semibold">Google Gemini API Key</span>
+                <span className="text-[10px] text-[#0F172A] font-semibold">Google Gemini API Key</span>
                 <input
                   type="password"
                   placeholder="AIzaSy..."
                   value={settings.GEMINI_API_KEY || ''}
                   onChange={e => setSettings({ ...settings, GEMINI_API_KEY: e.target.value })}
-                  className="w-full px-3.5 py-2 rounded-xl bg-white border border-[#E0E3EF] text-[#1A2550] font-mono text-xs focus:outline-none focus:border-[#C41641] transition"
+                  className="w-full px-3.5 py-2 rounded-xl bg-white border border-slate-200 text-[#0F172A] font-mono text-xs focus:outline-none focus:border-[#EA580C] transition"
                 />
               </div>
             </div>

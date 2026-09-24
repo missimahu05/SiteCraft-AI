@@ -6,39 +6,62 @@
 @tailwind utilities;
 
 :root {
-  /* Navy — couleur principale peintre */
-  --brand: #1A2550;
-  --brand-dark: #0F163A;
-  --brand-light: #2A3870;
-  --brand-pale: #E8EAF2;
+  /* Charte FeexPay & SiteCraft Signature : Orange Énergique, Blanc Lumineux & Ardoise */
+  --brand: #EA580C;
+  --brand-dark: #C2410C;
+  --brand-light: #FB923C;
+  --brand-pale: #FFF7ED;
 
-  /* Cramoisi — couleur accent peintre */
-  --accent: #C41641;
-  --accent-dark: #A01235;
-  --accent-light: #E03E64;
-  --accent-pale: #FDF1F3;
+  /* Accent Signature Orange FeexPay */
+  --accent: #EA580C;
+  --accent-dark: #C2410C;
+  --accent-light: #F97316;
+  --accent-pale: #FFF7ED;
 
-  /* Neutres & Sand architectural */
-  --ink: #0D1221;
-  --text: #2D3553;
-  --muted: #6B7299;
-  --bg: #FFFFFF;
-  --bg-alt: #F4F2EE;
-  --border: #E0E3EF;
-  --border-dark: rgba(255, 255, 255, 0.1);
+  /* Ardoise & Autorité */
+  --navy: #0F172A;
+  --navy-light: #1E293B;
 
-  --f-title: 'Outfit', sans-serif;
-  --f-body: 'Inter', sans-serif;
-  --radius: 16px;
-  --shadow-sm: 0 2px 8px rgba(13, 18, 33, 0.06);
-  --shadow-md: 0 8px 28px rgba(13, 18, 33, 0.1);
-  --shadow-lg: 0 16px 48px rgba(13, 18, 33, 0.14);
+  /* Neutres & Surfaces Blanches Pures (FeexPay Style) */
+  --bg-sand: #F8FAFC;
+  --bg-sand-light: #FFFFFF;
+  --bg-card: #FFFFFF;
+  --text-ink: #0F172A;
+  --text-content: #334155;
+  --text-muted: #64748B;
+  --border-sand: #E2E8F0;
+  --border-subtle: #F1F5F9;
+
+  /* FeexPay Status Highlights */
+  --feexpay-orange: #EA580C;
+  --feexpay-peach: #FFF7ED;
+  --feexpay-peach-border: #FED7AA;
+  --feexpay-yellow: #FEF08A;
+  --feexpay-blue: #0284C7;
+
+  --f-title: 'Outfit', -apple-system, sans-serif;
+  --f-body: 'Inter', -apple-system, sans-serif;
+  --f-mono: 'JetBrains Mono', monospace;
+  --radius: 18px;
 }
 
 @layer base {
+  * {
+    border-color: var(--border-sand);
+  }
+
+  html {
+    scroll-behavior: smooth;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    background-color: var(--bg-sand);
+    color: var(--text-content);
+  }
+
   body {
-    background-color: var(--bg-alt);
-    color: var(--text);
+    background-color: var(--bg-sand);
+    color: var(--text-content);
     font-family: var(--f-body);
     line-height: 1.6;
     overflow-x: hidden;
@@ -49,163 +72,222 @@
     color: var(--brand);
     font-weight: 800;
     line-height: 1.15;
+    letter-spacing: -0.02em;
+  }
+
+  button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
   }
 }
 
 @layer components {
-  /* Bouton principal Cramoisi avec reflet signature */
+  /* Cartes Blanches Lumineuses Épurées (FeexPay Dashboard Style) */
+  .glass-card {
+    background: #FFFFFF;
+    border: 1px solid #E2E8F0;
+    border-radius: 20px;
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.04), 0 6px 16px -2px rgba(0, 0, 0, 0.03);
+    transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .glass-card:hover {
+    box-shadow: 0 4px 20px -2px rgba(234, 88, 12, 0.08), 0 1px 3px 0 rgba(0, 0, 0, 0.04);
+    border-color: #FDBA74;
+  }
+
+  /* Bannière de Notification / Statut Style FeexPay */
+  .feexpay-banner {
+    background: #FFF7ED;
+    border: 1px solid #FED7AA;
+    border-radius: 18px;
+    padding: 1.25rem 1.75rem;
+    color: #9A3412;
+  }
+
+  /* Bouton Principal Orange FeexPay */
   .btn-primary, .primary-btn {
-    background: var(--accent);
+    background: #EA580C;
     color: #FFFFFF;
-    padding: 0.85rem 1.75rem;
-    border-radius: 14px;
+    padding: 0.75rem 1.5rem;
+    border-radius: 12px;
     font-family: var(--f-title);
-    font-weight: 800;
-    font-size: 0.92rem;
+    font-weight: 700;
+    font-size: 0.88rem;
     letter-spacing: -0.01em;
-    text-transform: uppercase;
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    gap: 0.65rem;
-    transition: all 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    box-shadow: 0 10px 25px rgba(196, 22, 65, 0.25);
+    gap: 0.5rem;
+    transition: all 0.2s ease;
+    box-shadow: 0 4px 14px rgba(234, 88, 12, 0.28);
     position: relative;
     overflow: hidden;
     cursor: pointer;
     border: none;
-  }
-
-  .btn-primary::after, .primary-btn::after {
-    content: '';
-    position: absolute;
-    top: -50%;
-    left: -60%;
-    width: 50px;
-    height: 200%;
-    background: rgba(255, 255, 255, 0.22);
-    transform: rotate(30deg);
-    transition: all 0.6s;
-  }
-
-  .btn-primary:hover::after, .primary-btn:hover::after {
-    left: 150%;
+    min-height: 42px;
+    min-width: 42px;
   }
 
   .btn-primary:hover, .primary-btn:hover {
-    transform: translateY(-3px) scale(1.02);
-    box-shadow: 0 15px 35px rgba(196, 22, 65, 0.4);
-    background: var(--accent-light);
+    background: #C2410C;
+    transform: translateY(-1px);
+    box-shadow: 0 6px 20px rgba(234, 88, 12, 0.4);
   }
 
   .btn-primary:active, .primary-btn:active {
     transform: translateY(0) scale(0.98);
   }
 
-  /* Bouton Ghost Navy */
-  .btn-ghost, .secondary-btn {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.65rem;
+  /* Bouton Secondaire Navy / Blanc */
+  .btn-secondary, .btn-ghost {
     background: #FFFFFF;
     color: var(--brand);
-    padding: 0.85rem 1.75rem;
+    padding: 0.85rem 1.5rem;
     border-radius: 14px;
     font-family: var(--f-title);
     font-weight: 800;
-    font-size: 0.92rem;
-    letter-spacing: -0.01em;
-    text-transform: uppercase;
-    border: 1.5px solid var(--border);
-    transition: all 0.3s ease;
+    font-size: 0.88rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.6rem;
+    border: 1.5px solid var(--border-sand);
+    transition: all 0.25s ease;
     cursor: pointer;
-    box-shadow: var(--shadow-sm);
+    box-shadow: 0 2px 8px rgba(13, 18, 33, 0.04);
+    min-height: 44px;
+    min-width: 44px;
   }
 
-  .btn-ghost:hover, .secondary-btn:hover {
+  .btn-secondary:hover, .btn-ghost:hover {
     border-color: var(--brand);
     background: var(--brand-pale);
     color: var(--brand-dark);
-    transform: translateY(-2px);
+    transform: translateY(-1px);
+    box-shadow: 0 6px 16px rgba(26, 37, 80, 0.08);
   }
 
-  /* Cartes */
-  .card-peintre {
-    background: #FFFFFF;
-    border: 1.5px solid #F0F1F5;
-    border-radius: 22px;
-    box-shadow: var(--shadow-sm);
-    transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
-  }
-
-  .card-peintre:hover {
-    transform: translateY(-5px);
-    box-shadow: var(--shadow-lg);
-    border-color: #E2E6F3;
-  }
-
-  .card-navy {
-    background: var(--brand);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 28px;
-    color: #FFFFFF;
-    box-shadow: 0 25px 60px rgba(15, 22, 58, 0.35);
-    position: relative;
-    overflow: hidden;
-  }
-
-  /* Section label signature peintre */
+  /* Section label signature */
   .section-label {
     font-size: 0.72rem;
     font-weight: 800;
     text-transform: uppercase;
-    letter-spacing: 0.22em;
+    letter-spacing: 0.2em;
     color: var(--accent);
-    margin-bottom: 0.85rem;
     display: inline-flex;
     align-items: center;
-    gap: 0.85rem;
+    gap: 0.65rem;
   }
 
   .section-label::before {
     content: '';
-    width: 2rem;
+    width: 1.5rem;
     height: 2px;
     background: var(--accent);
+    border-radius: 9999px;
   }
 
   /* Badges */
   .badge-accent {
-    @apply inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-extrabold uppercase tracking-wider;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.25rem 0.75rem;
+    border-radius: 9999px;
     background: var(--accent-pale);
     color: var(--accent);
-    border: 1px solid rgba(196, 22, 65, 0.2);
+    border: 1px solid rgba(196, 22, 65, 0.25);
+    font-family: var(--f-title);
+    font-size: 0.72rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
   }
 
   .badge-brand {
-    @apply inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-extrabold uppercase tracking-wider;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.25rem 0.75rem;
+    border-radius: 9999px;
     background: var(--brand-pale);
     color: var(--brand);
-    border: 1px solid rgba(26, 37, 80, 0.15);
+    border: 1px solid rgba(26, 37, 80, 0.18);
+    font-family: var(--f-title);
+    font-size: 0.72rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
   }
 }
 
-/* Custom Scrollbar peintre */
+/* Custom Scrollbar Architectural */
 ::-webkit-scrollbar {
   width: 8px;
   height: 8px;
 }
 
 ::-webkit-scrollbar-track {
-  background: var(--bg-alt);
+  background: var(--bg-sand);
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #D5D9E8;
+  background: #CBD5E1;
   border-radius: 9999px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
   background: var(--accent);
+}
+
+/* Leaflet Container Optimal Fix */
+.leaflet-container {
+  width: 100% !important;
+  height: 100% !important;
+  min-height: 480px;
+  border-radius: 20px;
+  z-index: 10;
+  background: #F1F5F9 !important;
+  outline: none;
+}
+
+.leaflet-control-zoom {
+  border-radius: 12px !important;
+  overflow: hidden;
+  box-shadow: 0 4px 14px rgba(26, 37, 80, 0.12) !important;
+  border: 1px solid var(--border-sand) !important;
+}
+
+.leaflet-control-zoom a {
+  background: #FFFFFF !important;
+  color: var(--brand) !important;
+  font-weight: bold !important;
+}
+
+/* Reset Leaflet divIcon default styling to remove unwanted grey borders/boxes */
+.custom-map-pin {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+
+/* Custom Leaflet Popups */
+.leaflet-popup-content-wrapper {
+  background: #FFFFFF !important;
+  color: var(--brand) !important;
+  border-radius: 16px !important;
+  padding: 0 !important;
+  overflow: hidden !important;
+  box-shadow: 0 12px 32px -4px rgba(15, 23, 42, 0.18), 0 2px 6px rgba(15, 23, 42, 0.08) !important;
+  border: 1px solid #E2E8F0 !important;
+}
+
+.leaflet-popup-content {
+  margin: 0 !important;
+  line-height: 1.4 !important;
+}
+
+.leaflet-popup-tip {
+  background: #FFFFFF !important;
 }

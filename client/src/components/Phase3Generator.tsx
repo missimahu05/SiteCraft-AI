@@ -2,7 +2,18 @@ import { useState, useEffect } from 'react';
 import type { BusinessProfile } from '../types';
 import { api } from '../api/client';
 import { WebsitePreview } from './WebsitePreview';
-import { Cloud, Rocket, ArrowRight, Copy, Check, Code, Eye, Terminal, ExternalLink, Download } from 'lucide-react';
+import { MotionReveal } from './motion/MotionReveal';
+import {
+  Cloud,
+  Rocket,
+  ArrowRight,
+  Copy,
+  Check,
+  Code,
+  Eye,
+  Download,
+  Globe2
+} from 'lucide-react';
 
 interface Phase3Props {
   selectedLead: BusinessProfile;
@@ -19,7 +30,7 @@ export const Phase3Generator = ({
   onSelectLead,
   onUpdateDeployment,
   onNavigateToOutreach,
-  onClaimCheckout
+  onClaimCheckout,
 }: Phase3Props) => {
   const [activeLead, setActiveLead] = useState<BusinessProfile>(selectedLead);
   const [viewMode, setViewMode] = useState<'preview' | 'code' | 'cloudflare'>('preview');
@@ -31,17 +42,20 @@ export const Phase3Generator = ({
 
   useEffect(() => {
     setActiveLead(selectedLead);
-    // Load generated React code for this lead
-    api.getGeneratedSiteCode(selectedLead.id)
-      .then(res => setGeneratedCode(res.code))
-      .catch(err => console.error('Code generation error:', err));
+    api
+      .getGeneratedSiteCode(selectedLead.id)
+      .then((res) => setGeneratedCode(res.code))
+      .catch((err) => console.error('Code generation error:', err));
   }, [selectedLead]);
 
-  const cleanSubdomain = activeLead.title.toLowerCase().replace(/[^a-z0-9]/g, '-').replace(/-+/g, '-');
+  const cleanSubdomain = activeLead.title
+    .toLowerCase()
+    .replace(/[^a-z0-9]/g, '-')
+    .replace(/-+/g, '-');
   const demoUrl = activeLead.cloudflareUrl || activeLead.deploymentUrl || `https://${cleanSubdomain}.pages.dev`;
 
   const handleLeadChange = (leadId: string) => {
-    const found = leads.find(l => l.id === leadId);
+    const found = leads.find((l) => l.id === leadId);
     if (found) {
       setActiveLead(found);
       onSelectLead(found);
@@ -52,30 +66,30 @@ export const Phase3Generator = ({
     setIsDeploying(true);
     setViewMode('cloudflare');
     setDeployLogs([
-      `[Cloudflare Worker] Début du pipeline pour ${activeLead.title}...`,
-      `[Architecture Utilisateur] Ingestion des 10 sections : Hero, TrustBar, Services, Process, WhyUs, Reviews, FAQ, Contact...`,
-      `[Vite & Tailwind] Compilation des styles et purge CSS avec la palette Navy (#1A2550) & Crimson (#C41641)...`,
-      `[Cloudflare Pages] Création du projet Pages "${cleanSubdomain}" sur l'Anycast Edge...`,
-      `[Cloudflare SSL] Émission du certificat SSL TLS 1.3 Universal...`
+      `[Cloudflare Worker Anycast] Initialisation du pipeline Edge pour ${activeLead.title}...`,
+      `[Architecture Composants] Ingestion des 10 sections certifiées : Hero, Proof, Services, Process, Reviews, FAQ...`,
+      `[Vite & Tailwind Purge] Compilation avec tokens sémantiques Ardoise (#0F172A) & FeexPay Orange (#EA580C)...`,
+      `[Cloudflare Pages API] Création du projet Pages "${cleanSubdomain}"...`,
+      `[SSL Handshake] Émission du certificat universel TLS 1.3 avec chiffrement ECDSA...`,
     ]);
 
     try {
       const res = await api.deployCloudflare(activeLead.id);
-      setDeployLogs(prev => [
+      setDeployLogs((prev) => [
         ...prev,
-        `[MongoDB DataStore] Lead synchronisé avec l'URL Cloudflare Pages.`,
-        `[Cloudflare Edge] Propagation réussie sur 330+ datacenters Anycast.`,
-        `[Live Ready] Accessible en production : ${res.url}`
+        `[MongoDB DataStore] Lead synchronisé avec l'URL Cloudflare Pages en production.`,
+        `[Cloudflare Global Network] Propagation active sur 330+ points de présence Anycast.`,
+        `[Live Ready] Site opérationnel à l'adresse : ${res.url}`,
       ]);
       onUpdateDeployment(activeLead.id, res.url);
-      setActiveLead(prev => ({
+      setActiveLead((prev) => ({
         ...prev,
         cloudflareUrl: res.url,
         deploymentUrl: res.url,
-        status: 'site_genere'
+        status: 'site_genere',
       }));
     } catch (err: any) {
-      setDeployLogs(prev => [...prev, `[Erreur Déploiement] ${err.message}`]);
+      setDeployLogs((prev) => [...prev, `[Erreur Déploiement] ${err.message}`]);
     } finally {
       setIsDeploying(false);
     }
@@ -119,238 +133,239 @@ export const Phase3Generator = ({
   };
 
   return (
-    <div className="space-y-8">
-      {/* Banner */}
-      <div className="p-8 sm:p-10 rounded-3xl bg-white border border-[#E0E3EF] shadow-card relative overflow-hidden flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6">
-        <div className="space-y-2 relative z-10">
-          <p className="section-label">
-            PHASE 03 • AUTONOMOUS STUDIO & CLOUDFLARE PAGES
-          </p>
+    <div className="space-y-6">
+      {/* Top Banner */}
+      <MotionReveal direction="up" delay={0.05}>
+        <div className="glass-card p-6 sm:p-8 relative overflow-hidden border border-white/80 shadow-md">
+          <div className="absolute top-0 right-0 w-80 h-80 bg-gradient-to-bl from-amber-500/10 via-rose-500/5 to-transparent rounded-full blur-3xl pointer-events-none" />
 
-          <h2 className="text-2xl sm:text-4xl font-outfit font-black text-[#1A2550] tracking-tight uppercase italic">
-            Génération Frontend & <span className="text-[#C41641]">Déploiement Cloudflare</span>
-          </h2>
+          <div className="relative z-10 flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6">
+            <div className="space-y-2">
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-orange-50 border border-orange-200 text-[#EA580C] text-xs font-outfit font-extrabold uppercase tracking-widest">
+                <Cloud className="w-3.5 h-3.5 text-[#EA580C]" />
+                <span>Phase 03 • Autonomous Studio & Cloudflare Pages</span>
+              </div>
 
-          <p className="text-sm text-[#6B7299] max-w-3xl leading-relaxed">
-            Génération autonome calquée sur <strong>votre structure de code</strong> (architecture modulaire de <code>peintre-react</code>) et déploiement Anycast Edge instantané sur Cloudflare Pages.
-          </p>
-        </div>
+              <h2 className="text-2xl sm:text-4xl font-outfit font-black text-[#0F172A] tracking-tight uppercase">
+                Génération Frontend & <span className="text-[#EA580C]">Anycast Cloudflare</span>
+              </h2>
 
-        {/* Lead Switcher Pill */}
-        <div className="flex items-center gap-3 shrink-0 bg-[#F4F2EE] p-2 rounded-2xl border border-[#E0E3EF]">
-          <label className="text-xs text-[#6B7299] font-outfit font-bold uppercase tracking-wider pl-2">Prospect :</label>
-          <select
-            value={activeLead.id}
-            onChange={(e) => handleLeadChange(e.target.value)}
-            className="px-4 py-2.5 rounded-xl bg-white border border-[#E0E3EF] text-xs font-outfit font-bold text-[#1A2550] focus:outline-none focus:border-[#C41641] cursor-pointer shadow-sm"
-          >
-            {leads.map(l => (
-              <option key={l.id} value={l.id}>{l.title}</option>
-            ))}
-          </select>
-        </div>
-      </div>
+              <p className="text-sm text-slate-600 max-w-3xl leading-relaxed">
+                Génération autonome de site web haute performance responsive avec l'architecture de composants
+                modulaires, optimisations Core Web Vitals (&lt;1.2s) et déploiement mondial Anycast Edge.
+              </p>
+            </div>
 
-      {/* Mode Switcher & Cloudflare Deployment Bar */}
-      <div className="flex flex-wrap items-center justify-between gap-4 p-4 rounded-3xl bg-white border border-[#E0E3EF] shadow-sm">
-        {/* Switcher Tabs */}
-        <div className="flex items-center gap-2 bg-[#F4F2EE] p-1.5 rounded-2xl border border-[#E0E3EF]">
-          <button
-            onClick={() => setViewMode('preview')}
-            className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-outfit font-bold transition cursor-pointer ${
-              viewMode === 'preview' ? 'bg-[#1A2550] text-white shadow-md' : 'text-[#6B7299] hover:text-[#1A2550]'
-            }`}
-          >
-            <Eye className="w-3.5 h-3.5" />
-            <span>Aperçu Live</span>
-          </button>
-
-          <button
-            onClick={() => setViewMode('code')}
-            className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-outfit font-bold transition cursor-pointer ${
-              viewMode === 'code' ? 'bg-[#1A2550] text-white shadow-md' : 'text-[#6B7299] hover:text-[#1A2550]'
-            }`}
-          >
-            <Code className="w-3.5 h-3.5" />
-            <span>Code Source React</span>
-          </button>
-
-          <button
-            onClick={() => setViewMode('cloudflare')}
-            className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-outfit font-bold transition cursor-pointer ${
-              viewMode === 'cloudflare' ? 'bg-[#1A2550] text-white shadow-md' : 'text-[#6B7299] hover:text-[#1A2550]'
-            }`}
-          >
-            <Cloud className="w-3.5 h-3.5 text-orange-500" />
-            <span>Console Cloudflare</span>
-          </button>
-        </div>
-
-        {/* Right Actions */}
-        <div className="flex items-center gap-3">
-          <div className="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-xl bg-[#F4F2EE] border border-[#E0E3EF] text-xs font-mono text-[#1A2550]">
-            <Cloud className="w-3.5 h-3.5 text-orange-500" />
-            <span className="truncate max-w-[220px]">{demoUrl}</span>
-            <button onClick={copyUrlToClipboard} className="text-[#6B7299] hover:text-[#C41641] transition ml-1 cursor-pointer">
-              {copiedUrl ? <Check className="w-3.5 h-3.5 text-emerald-600" /> : <Copy className="w-3.5 h-3.5" />}
-            </button>
+            {/* Lead Switcher Pill */}
+            <div className="flex items-center gap-3 shrink-0 bg-slate-100/90 p-2 rounded-2xl border border-slate-200 shadow-sm">
+              <label htmlFor="gen-lead-select" className="text-xs text-slate-600 font-outfit font-bold uppercase tracking-wider pl-2">
+                Prospect :
+              </label>
+              <select
+                id="gen-lead-select"
+                value={activeLead.id}
+                onChange={(e) => handleLeadChange(e.target.value)}
+                className="px-3.5 py-2 rounded-xl bg-white border border-slate-200 text-xs font-outfit font-bold text-[#0F172A] focus:outline-none focus:border-[#EA580C] cursor-pointer shadow-sm"
+              >
+                {leads.map((l) => (
+                  <option key={l.id} value={l.id}>
+                    {l.title}
+                  </option>
+                ))}
+              </select>
+            </div>
           </div>
-
-          <button
-            onClick={runCloudflareDeployment}
-            disabled={isDeploying}
-            className="btn-primary text-xs !py-2.5 !px-5 !rounded-xl flex items-center gap-2"
-          >
-            <Rocket className={`w-4 h-4 ${isDeploying ? 'animate-bounce' : ''}`} />
-            <span>{isDeploying ? 'Déploiement en cours...' : 'Déployer sur Cloudflare Pages'}</span>
-          </button>
         </div>
-      </div>
+      </MotionReveal>
 
-      {/* Main Content Area */}
+      {/* Control Strip & Quick Deployment Bar */}
+      <MotionReveal direction="up" delay={0.1}>
+        <div className="glass-card p-4 space-y-3">
+          <div className="flex flex-wrap items-center justify-between gap-4">
+            {/* View Mode Tabs */}
+            <div className="flex items-center gap-1.5 bg-slate-100/80 p-1 rounded-xl border border-slate-200">
+              <button
+                onClick={() => setViewMode('preview')}
+                className={`flex items-center gap-2 px-3.5 py-2 rounded-lg text-xs font-outfit font-bold transition cursor-pointer ${
+                  viewMode === 'preview' ? 'bg-[#0F172A] text-white shadow-sm' : 'text-slate-600 hover:text-slate-900'
+                }`}
+              >
+                <Eye className="w-3.5 h-3.5" />
+                <span>Aperçu Live</span>
+              </button>
+
+              <button
+                onClick={() => setViewMode('code')}
+                className={`flex items-center gap-2 px-3.5 py-2 rounded-lg text-xs font-outfit font-bold transition cursor-pointer ${
+                  viewMode === 'code' ? 'bg-[#0F172A] text-white shadow-sm' : 'text-slate-600 hover:text-slate-900'
+                }`}
+              >
+                <Code className="w-3.5 h-3.5" />
+                <span>Code React</span>
+              </button>
+
+              <button
+                onClick={() => setViewMode('cloudflare')}
+                className={`flex items-center gap-2 px-3.5 py-2 rounded-lg text-xs font-outfit font-bold transition cursor-pointer ${
+                  viewMode === 'cloudflare' ? 'bg-[#0F172A] text-white shadow-sm' : 'text-slate-600 hover:text-slate-900'
+                }`}
+              >
+                <Cloud className="w-3.5 h-3.5 text-[#EA580C]" />
+                <span>Console Cloudflare</span>
+              </button>
+            </div>
+
+            {/* Right Quick Controls */}
+            <div className="flex items-center gap-3 flex-wrap">
+              <div className="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-xl bg-slate-100 border border-slate-200 text-xs font-mono text-[#0F172A]">
+                <Globe2 className="w-3.5 h-3.5 text-cyan-600" />
+                <span className="truncate max-w-[200px]">{demoUrl}</span>
+                <button
+                  onClick={copyUrlToClipboard}
+                  className="text-slate-500 hover:text-[#EA580C] transition ml-1 cursor-pointer"
+                  title="Copier l'URL"
+                >
+                  {copiedUrl ? <Check className="w-3.5 h-3.5 text-emerald-600" /> : <Copy className="w-3.5 h-3.5" />}
+                </button>
+              </div>
+
+              <button
+                onClick={runCloudflareDeployment}
+                disabled={isDeploying}
+                className="btn-primary text-xs !py-2.5 !px-4 !rounded-xl"
+                aria-label="Déployer sur Cloudflare Pages"
+              >
+                <Rocket className={`w-4 h-4 ${isDeploying ? 'animate-bounce' : ''}`} />
+                <span>{isDeploying ? 'Déploiement en cours...' : 'Déployer sur Cloudflare'}</span>
+              </button>
+
+              <button
+                onClick={() => onNavigateToOutreach(activeLead)}
+                className="btn-secondary text-xs !py-2.5 !px-4"
+                aria-label="Passer à la prospection"
+              >
+                <span>Prospection</span>
+                <ArrowRight className="w-3.5 h-3.5" />
+              </button>
+            </div>
+          </div>
+        </div>
+      </MotionReveal>
+
+      {/* Main Content View Switcher */}
       {viewMode === 'preview' && (
-        <div className="space-y-6">
-          <WebsitePreview
-            business={activeLead}
-            onClaimCheckout={onClaimCheckout}
-          />
-        </div>
+        <MotionReveal direction="up" delay={0.15}>
+          <div className="space-y-6">
+            <WebsitePreview business={activeLead} onClaimCheckout={onClaimCheckout} />
+          </div>
+        </MotionReveal>
       )}
 
       {viewMode === 'code' && (
-        <div className="p-8 rounded-3xl bg-[#0F163A] border border-white/10 text-white space-y-4 shadow-2xl">
-          <div className="flex items-center justify-between pb-3 border-b border-white/10">
-            <div className="flex items-center gap-3">
-              <div className="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center">
-                <Code className="w-4 h-4 text-[#C41641]" />
+        <MotionReveal direction="up" delay={0.15}>
+          <div className="p-6 sm:p-8 rounded-2xl bg-[#0A0F1D] border border-white/10 text-white space-y-4 shadow-2xl">
+            <div className="flex flex-wrap items-center justify-between gap-3 pb-3 border-b border-white/10">
+              <div className="flex items-center gap-3">
+                <div className="w-9 h-9 rounded-xl bg-white/10 flex items-center justify-center">
+                  <Code className="w-4 h-4 text-rose-400" />
+                </div>
+                <div>
+                  <h4 className="font-outfit font-black uppercase text-sm tracking-tight text-white">
+                    App.jsx • Architecture Modulaire React
+                  </h4>
+                  <p className="text-[11px] font-mono text-slate-400">
+                    Tokens sémantiques Outfit & Inter • Primitives UI • Sections conversion
+                  </p>
+                </div>
               </div>
-              <div>
-                <h4 className="font-outfit font-black uppercase text-sm tracking-tight text-white">
-                  App.jsx • Architecture Modulaire (peintre-react)
-                </h4>
-                <p className="text-[11px] font-mono text-zinc-400">
-                  Généré avec votre charte : Outfit, Inter, Tokens Navy & Crimson, 10 sections optimisées SEO
-                </p>
+
+              <div className="flex items-center gap-2 flex-wrap">
+                <button
+                  onClick={copyCodeToClipboard}
+                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-xs font-mono font-bold transition cursor-pointer"
+                >
+                  {copiedCode ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
+                  <span>{copiedCode ? 'Copié !' : 'Copier'}</span>
+                </button>
+
+                <button
+                  onClick={downloadCode}
+                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/15 hover:bg-white/25 text-xs font-mono font-bold transition cursor-pointer"
+                  title="Télécharger le code React"
+                >
+                  <Download className="w-3.5 h-3.5" />
+                  <span>App.jsx</span>
+                </button>
+
+                <button
+                  onClick={downloadHtml}
+                  className="btn-primary text-xs !py-1.5 !px-3.5 !rounded-lg"
+                  title="Télécharger le site complet en HTML autonome"
+                >
+                  <Download className="w-3.5 h-3.5" />
+                  <span>HTML Autonome</span>
+                </button>
               </div>
             </div>
 
-            <div className="flex items-center gap-2 flex-wrap">
-              <button
-                onClick={copyCodeToClipboard}
-                className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white/10 hover:bg-white/20 text-xs font-mono font-bold transition cursor-pointer"
-              >
-                {copiedCode ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
-                <span>{copiedCode ? 'Copié !' : 'Copier'}</span>
-              </button>
-
-              <button
-                onClick={downloadCode}
-                className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white/15 hover:bg-white/25 text-xs font-mono font-bold transition cursor-pointer"
-                title="Télécharger le composant React App.jsx"
-              >
-                <Download className="w-3.5 h-3.5" />
-                <span>App.jsx</span>
-              </button>
-
-              <button
-                onClick={downloadHtml}
-                className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-[#C41641] hover:bg-[#A01235] text-xs font-outfit font-black uppercase tracking-wider transition cursor-pointer shadow-md"
-                title="Télécharger le site complet en HTML autonome (Zero dépendance)"
-              >
-                <Download className="w-3.5 h-3.5" />
-                <span>Site HTML</span>
-              </button>
+            <div className="bg-[#060A14] p-4 rounded-xl border border-white/5 font-mono text-xs text-slate-300 max-h-[500px] overflow-y-auto leading-relaxed">
+              <pre>{generatedCode || '// Chargement du code source React généré...'}</pre>
             </div>
           </div>
-
-          <pre className="font-mono text-xs text-zinc-300 leading-relaxed overflow-x-auto p-4 rounded-2xl bg-black/40 border border-white/5 max-h-[600px] no-scrollbar">
-            <code>{generatedCode}</code>
-          </pre>
-        </div>
+        </MotionReveal>
       )}
 
       {viewMode === 'cloudflare' && (
-        <div className="grid lg:grid-cols-12 gap-8 items-start">
-          {/* Status card */}
-          <div className="lg:col-span-5 p-8 rounded-3xl bg-white border border-[#E0E3EF] shadow-card space-y-6">
-            <div className="flex items-center gap-3">
-              <div className="w-12 h-12 rounded-2xl bg-orange-50 border border-orange-200 flex items-center justify-center">
-                <Cloud className="w-6 h-6 text-orange-500" />
-              </div>
-              <div>
-                <span className="text-[10px] font-mono font-bold text-orange-600 uppercase tracking-widest">
-                  Infrastructure Cloudflare
-                </span>
-                <h3 className="text-xl font-outfit font-black uppercase text-[#1A2550]">
-                  Pages & Anycast CDN
-                </h3>
-              </div>
-            </div>
-
-            <div className="space-y-3 text-xs">
-              <div className="flex justify-between py-2 border-b border-[#E0E3EF]">
-                <span className="text-[#6B7299]">Nom du Projet :</span>
-                <span className="font-mono font-bold text-[#1A2550]">{cleanSubdomain}</span>
-              </div>
-              <div className="flex justify-between py-2 border-b border-[#E0E3EF]">
-                <span className="text-[#6B7299]">Région Edge :</span>
-                <span className="font-mono font-bold text-emerald-600">330+ Datacenters Mondiaux</span>
-              </div>
-              <div className="flex justify-between py-2 border-b border-[#E0E3EF]">
-                <span className="text-[#6B7299]">Certificat SSL :</span>
-                <span className="font-mono font-bold text-emerald-600">Universal SSL TLS 1.3 Actif</span>
-              </div>
-              <div className="flex justify-between py-2 border-b border-[#E0E3EF]">
-                <span className="text-[#6B7299]">URL de Production :</span>
-                <a href={demoUrl} target="_blank" rel="noreferrer" className="font-mono font-bold text-[#C41641] hover:underline flex items-center gap-1">
-                  <span>{demoUrl}</span>
-                  <ExternalLink className="w-3 h-3" />
-                </a>
-              </div>
-            </div>
-
-            <div className="pt-2">
-              <button
-                onClick={() => onNavigateToOutreach(activeLead)}
-                className="btn-primary w-full text-xs !py-3.5 !rounded-2xl flex items-center justify-center gap-2"
-              >
-                <span>Passer à la Phase 04 (Prospection)</span>
-                <ArrowRight className="w-4 h-4" />
-              </button>
-            </div>
-          </div>
-
-          {/* Cloudflare Log Terminal */}
-          <div className="lg:col-span-7 p-7 rounded-3xl bg-[#0F163A] border border-white/10 text-white space-y-4 shadow-2xl">
-            <div className="flex items-center justify-between pb-3 border-b border-white/10">
-              <div className="flex items-center gap-2">
-                <Terminal className="w-4 h-4 text-orange-400" />
-                <span className="font-mono text-xs font-bold text-zinc-300">
-                  Cloudflare Build & Edge Pipeline
-                </span>
-              </div>
-              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping" />
-            </div>
-
-            <div className="font-mono text-xs text-zinc-300 space-y-2 max-h-[340px] overflow-y-auto no-scrollbar p-3 rounded-2xl bg-black/40 border border-white/5">
-              {deployLogs.length === 0 ? (
-                <div className="text-zinc-500 italic py-6 text-center">
-                  Cliquez sur "Déployer sur Cloudflare Pages" pour lancer la distribution Anycast.
+        <MotionReveal direction="up" delay={0.15}>
+          <div className="p-6 sm:p-8 rounded-2xl bg-[#0A0F1D] border border-white/10 text-white space-y-5 shadow-2xl">
+            <div className="flex flex-wrap items-center justify-between gap-3 pb-3 border-b border-white/10">
+              <div className="flex items-center gap-3">
+                <div className="w-9 h-9 rounded-xl bg-amber-500/20 flex items-center justify-center text-amber-400">
+                  <Cloud className="w-5 h-5" />
                 </div>
-              ) : (
-                deployLogs.map((log, idx) => (
-                  <div key={idx} className="flex items-start gap-2">
-                    <span className="text-orange-400 select-none">➜</span>
-                    <span className={log.includes('Live Ready') ? 'text-emerald-400 font-bold' : log.includes('Erreur') ? 'text-red-400' : ''}>
-                      {log}
-                    </span>
+                <div>
+                  <h4 className="font-outfit font-black uppercase text-sm tracking-tight text-white flex items-center gap-2">
+                    Console Anycast Cloudflare Pages
+                    <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping" />
+                  </h4>
+                  <p className="text-[11px] font-mono text-slate-400">
+                    Projet : {cleanSubdomain} • Latence mondiale &lt; 20ms • TLS 1.3
+                  </p>
+                </div>
+              </div>
+
+              {activeLead.cloudflareUrl && (
+                <a
+                  href={activeLead.cloudflareUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="btn-primary text-xs !py-1.5 !px-3.5 !rounded-lg"
+                >
+                  <Globe2 className="w-3.5 h-3.5" />
+                  <span>Ouvrir le Site en Ligne</span>
+                </a>
+              )}
+            </div>
+
+            <div className="bg-[#060A14] p-4 rounded-xl border border-white/5 font-mono text-xs text-slate-300 min-h-[220px] max-h-[380px] overflow-y-auto space-y-2">
+              {deployLogs.length > 0 ? (
+                deployLogs.map((log, i) => (
+                  <div key={i} className="flex items-start gap-2">
+                    <span className="text-amber-400 select-none">&gt;</span>
+                    <span>{log}</span>
                   </div>
                 ))
+              ) : (
+                <div className="text-slate-500 italic py-8 text-center">
+                  Aucun log de déploiement pour le moment. Cliquez sur « Déployer sur Cloudflare » pour lancer la construction Anycast.
+                </div>
               )}
             </div>
           </div>
-        </div>
+        </MotionReveal>
       )}
     </div>
   );
 };
+
+export default Phase3Generator;
